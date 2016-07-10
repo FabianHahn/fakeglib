@@ -1,4 +1,5 @@
 set(TEST_SRC
+	GHashTable.cpp
 	main.cpp
 )
 
