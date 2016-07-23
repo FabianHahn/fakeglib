@@ -307,6 +307,44 @@ TEST_F(GHashTableTest, steal)
 	ASSERT_FALSE(removed) << "stealing non-existing element from hashtable should fail";
 }
 
+TEST_F(GHashTableTest, foreachRemove)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	guint removed = g_hash_table_foreach_remove(hashTable, test_find_callback, (gpointer) testSecondKey);
+	ASSERT_EQ(removed, 1) << "foreach remove should have removed one matching element";
+	ASSERT_EQ(keyDestroyed.size(), 1) << "removed element key should be freed";
+	ASSERT_EQ(keyDestroyed[0], (gpointer) testSecondKey) << "removed element key should be freed";
+	ASSERT_EQ(valueDestroyed.size(), 1) << "removed element value should be freed";
+	ASSERT_EQ(valueDestroyed[0], (gpointer) &testSecondValue) << "removed element value should be freed";
+	removed = g_hash_table_foreach_remove(hashTable, test_find_callback, (gpointer) testSecondKey);
+	ASSERT_EQ(removed, 0) << "foreach remove should be idempotent";
+}
+
+TEST_F(GHashTableTest, foreachSteal)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	guint removed = g_hash_table_foreach_steal(hashTable, test_find_callback, (gpointer) testSecondKey);
+	ASSERT_EQ(removed, 1) << "foreach steal should have stolen one matching element";
+	ASSERT_EQ(keyDestroyed.size(), 0) << "stolen element key should not be freed";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "stolen element value should not be freed";
+	removed = g_hash_table_foreach_remove(hashTable, test_find_callback, (gpointer) testSecondKey);
+	ASSERT_EQ(removed, 0) << "foreach steal should be idempotent";
+}
+
 TEST_F(GHashTableTest, freeInserted)
 {
 	Create();
