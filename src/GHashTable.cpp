@@ -156,6 +156,14 @@ FAKEGLIB_API gboolean g_hash_table_lookup_extended(GHashTable *hashTable, gconst
 	}
 }
 
+FAKEGLIB_API void g_hash_table_foreach(GHashTable *hashTable, GHFunc callback, gpointer userData)
+{
+	GHashTable::Map::iterator end = hashTable->map.end();
+	for(GHashTable::Map::iterator iter = hashTable->map.begin(); iter != end; ++iter) {
+		callback(iter->first.value, iter->second.value, userData);
+	}
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();

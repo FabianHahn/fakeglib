@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <glib.h>
 
+#include <vector>
+
 static guint test_hash(gconstpointer key);
 static gboolean test_equal(gconstpointer a, gconstpointer b);
 static void test_free_key(gpointer data);
@@ -8,6 +10,8 @@ static void test_free_value(gpointer data);
 
 class GHashTableTest;
 static GHashTableTest *currentTest = NULL;
+static std::vector < std::pair<gpointer, gpointer> > foreachCallbacks;
+static gpointer foreachLastUserData;
 
 class GHashTableTest : public ::testing::Test {
 public:
@@ -95,6 +99,18 @@ static void test_free_value(gpointer data)
 	if(currentTest->valueDestroy != NULL) {
 		currentTest->valueDestroy(data);
 	}
+}
+
+static void test_foreach_clear()
+{
+	foreachCallbacks.clear();
+	foreachLastUserData = NULL;
+}
+
+static void test_foreach_callback(gpointer key, gpointer value, gpointer userData)
+{
+	foreachCallbacks.push_back(std::make_pair(key, value));
+	foreachLastUserData = userData;
 }
 
 TEST_F(GHashTableTest, insert)
@@ -216,6 +232,25 @@ TEST_F(GHashTableTest, lookupExtended)
 	ASSERT_EQ(&testValue, value) << "extended hash table lookup should return value";
 	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
 	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+}
+
+TEST_F(GHashTableTest, foreach)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+	char testUserData = 'X';
+
+	test_foreach_clear();
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	g_hash_table_foreach(hashTable, test_foreach_callback, &testUserData);
+	ASSERT_EQ(foreachCallbacks.size(), 2) << "foreach callback should have been called two times";
+	ASSERT_NE(std::find(foreachCallbacks.begin(), foreachCallbacks.end(), std::make_pair((gpointer) testFirstKey, (gpointer) &testFirstValue)), foreachCallbacks.end()) << "foreach callback should be called with first element";
+	ASSERT_NE(std::find(foreachCallbacks.begin(), foreachCallbacks.end(), std::make_pair((gpointer) testSecondKey, (gpointer) &testSecondValue)), foreachCallbacks.end()) << "foreach callback should be called with second element";
+	ASSERT_EQ(foreachLastUserData, &testUserData) << "foreach callback should pass correct user data";
 }
 
 TEST_F(GHashTableTest, freeInserted)
