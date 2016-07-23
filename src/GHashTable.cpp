@@ -126,6 +126,18 @@ FAKEGLIB_API guint g_hash_table_size(GHashTable *hashTable)
 	return (guint) hashTable->map.size();
 }
 
+FAKEGLIB_API gpointer g_hash_table_lookup(GHashTable *hashTable, gconstpointer keyValue)
+{
+	GHashTableKey key = { const_cast<void *>(keyValue), &hashTable->functions };
+
+	GHashTable::Map::iterator query = hashTable->map.find(key);
+	if(query != hashTable->map.end()) {
+		return query->second.value;
+	} else {
+		return NULL;
+	}
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();

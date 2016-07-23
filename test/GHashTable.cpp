@@ -181,6 +181,22 @@ TEST_F(GHashTableTest, size)
 	ASSERT_EQ(size, 2) << "hash table should still contain two elements after an element was replaced";
 }
 
+TEST_F(GHashTableTest, lookup)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "foo";
+	int testValue = 1337;
+
+	gpointer value = g_hash_table_lookup(hashTable, testFirstKey);
+	ASSERT_TRUE(value == NULL) << "hash table should fail to look up entry before it is inserted";
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testValue);
+	value = g_hash_table_lookup(hashTable, testSecondKey);
+	ASSERT_TRUE(value == &testValue) << "hash table should look up entry after it was inserted";
+	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
+	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+}
+
 TEST_F(GHashTableTest, freeInserted)
 {
 	Create();
