@@ -77,6 +77,7 @@ FAKEGLIB_API gboolean g_hash_table_insert(GHashTable *hashTable, gpointer keyVal
 	if(ret.second) {
 		return true;
 	} else if(hashTable->functions.mappedDestroy != NULL) {
+		assert(&hashTable->functions == ret.first->first.functions);
 		assert(&hashTable->functions == ret.first->second.functions);
 		if(hashTable->functions.keyDestroy != NULL) {
 			hashTable->functions.keyDestroy(keyValue);
@@ -89,16 +90,39 @@ FAKEGLIB_API gboolean g_hash_table_insert(GHashTable *hashTable, gpointer keyVal
 	return false;
 }
 
+FAKEGLIB_API gboolean g_hash_table_replace(GHashTable *hashTable, gpointer keyValue, gpointer mappedValue)
+{
+	GHashTableKey key = { keyValue, &hashTable->functions };
+	GHashTableMapped mapped = { mappedValue, &hashTable->functions };
+
+	bool newlyInserted = true;
+	GHashTable::Map::iterator query = hashTable->map.find(key);
+	if(query != hashTable->map.end()) {
+		assert(&hashTable->functions == query->first.functions);
+		assert(&hashTable->functions == query->second.functions);
+		if(hashTable->functions.keyDestroy != NULL) {
+			hashTable->functions.keyDestroy(query->first.value);
+		}
+		if(hashTable->functions.mappedDestroy != NULL) {
+			hashTable->functions.mappedDestroy(query->second.value);
+		}
+		hashTable->map.erase(query);
+		newlyInserted = false;
+	}
+	hashTable->map[key] = mapped;
+	return newlyInserted;
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();
 	for(GHashTable::Map::iterator iter = hashTable->map.begin(); iter != end; ++iter) {
 		assert(&hashTable->functions == iter->first.functions);
 		assert(&hashTable->functions == iter->second.functions);
-		if (hashTable->functions.keyDestroy != NULL) {
+		if(hashTable->functions.keyDestroy != NULL) {
 			hashTable->functions.keyDestroy(iter->first.value);
 		}
-		if (hashTable->functions.mappedDestroy != NULL) {
+		if(hashTable->functions.mappedDestroy != NULL) {
 			hashTable->functions.mappedDestroy(iter->second.value);
 		}
 	}

@@ -128,6 +128,25 @@ TEST_F(GHashTableTest, insertTwice)
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "inserted first element should have had its value destroyed";
 }
 
+TEST_F(GHashTableTest, insertReplace)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "foo";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	gboolean inserted = g_hash_table_replace(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	ASSERT_FALSE(inserted) << "twice inserted elemented should already exist";
+	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
+	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(keyDestroyed.size(), 1) << "inserted second element should have replaced key of first element";
+	ASSERT_EQ(keyDestroyed[0], (gpointer) testFirstKey) << "inserted second element should have replaced key of first element";
+	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
+	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "inserted first element should have had its value destroyed";
+}
+
 TEST_F(GHashTableTest, freeInserted)
 {
 	Create();
