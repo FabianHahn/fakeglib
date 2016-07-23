@@ -113,6 +113,14 @@ FAKEGLIB_API gboolean g_hash_table_replace(GHashTable *hashTable, gpointer keyVa
 	return newlyInserted;
 }
 
+FAKEGLIB_API gboolean g_hash_table_contains(GHashTable *hashTable, gconstpointer keyValue)
+{
+	GHashTableKey key = { const_cast<void *>(keyValue), &hashTable->functions };
+
+	GHashTable::Map::iterator query = hashTable->map.find(key);
+	return query != hashTable->map.end();
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();

@@ -147,6 +147,19 @@ TEST_F(GHashTableTest, insertReplace)
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "inserted first element should have had its value destroyed";
 }
 
+TEST_F(GHashTableTest, contains)
+{
+	Create();
+	const char *testKey = "foo";
+	int testValue = 1337;
+
+	gboolean contains = g_hash_table_contains(hashTable, (gpointer) testKey);
+	ASSERT_FALSE(contains) << "hash table should not contain element before it is inserted";
+	g_hash_table_insert(hashTable, (gpointer) testKey, &testValue);
+	contains = g_hash_table_contains(hashTable, (gpointer) testKey);
+	ASSERT_TRUE(contains) << "hash table should contain element after it was inserted";
+}
+
 TEST_F(GHashTableTest, freeInserted)
 {
 	Create();
