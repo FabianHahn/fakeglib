@@ -156,11 +156,22 @@ FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2)
 {
+	if(v1 == NULL && v2 == NULL) {
+		return true;
+	}
+	if(v1 == NULL || v2 == NULL) {
+		return false;
+	}
+
 	return strcmp((const char *) v1, (const char *) v2) == 0;
 }
 
 FAKEGLIB_API guint g_str_hash(gconstpointer v)
 {
+	if(v == NULL) {
+		return 0;
+	}
+
 	std::string vString((const char *) v);
 	return (guint) std::hash<std::string>{}(vString);
 }
