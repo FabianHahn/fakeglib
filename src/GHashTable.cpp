@@ -175,6 +175,41 @@ FAKEGLIB_API gpointer g_hash_table_find(GHashTable *hashTable, GHRFunc predicate
 	return NULL;
 }
 
+FAKEGLIB_API gboolean g_hash_table_remove(GHashTable *hashTable, gconstpointer keyValue)
+{
+	GHashTableKey key = { const_cast<void *>(keyValue), &hashTable->functions };
+
+	GHashTable::Map::iterator query = hashTable->map.find(key);
+	if(query != hashTable->map.end()) {
+		assert(&hashTable->functions == query->first.functions);
+		assert(&hashTable->functions == query->second.functions);
+		if(hashTable->functions.keyDestroy != NULL) {
+			hashTable->functions.keyDestroy(query->first.value);
+		}
+		if(hashTable->functions.mappedDestroy != NULL) {
+			hashTable->functions.mappedDestroy(query->second.value);
+		}
+		hashTable->map.erase(query);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+FAKEGLIB_API gboolean g_hash_table_steal(GHashTable *hashTable, gconstpointer keyValue)
+{
+	GHashTableKey key = { const_cast<void *>(keyValue), &hashTable->functions };
+
+	GHashTable::Map::iterator query = hashTable->map.find(key);
+	if(query != hashTable->map.end()) {
+		hashTable->map.erase(query);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();

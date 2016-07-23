@@ -275,6 +275,38 @@ TEST_F(GHashTableTest, find)
 	ASSERT_TRUE(value == NULL) << "find should not find non-existing key in hash table";
 }
 
+TEST_F(GHashTableTest, remove)
+{
+	Create();
+	const char *testKey = "foo";
+	int testValue = 1337;
+
+	g_hash_table_insert(hashTable, (gpointer) testKey, &testValue);
+	gboolean removed = g_hash_table_remove(hashTable, testKey);
+	ASSERT_TRUE(removed) << "removing existing element from hashtable should succeed";
+	ASSERT_EQ(keyDestroyed.size(), 1) << "removed element key should be freed";
+	ASSERT_EQ(keyDestroyed[0], (gpointer) testKey) << "removed element key should be freed";
+	ASSERT_EQ(valueDestroyed.size(), 1) << "removed element value should be freed";
+	ASSERT_EQ(valueDestroyed[0], (gpointer) &testValue) << "removed element value should be freed";
+	removed = g_hash_table_remove(hashTable, testKey);
+	ASSERT_FALSE(removed) << "removing non-existing element from hashtable should fail";
+}
+
+TEST_F(GHashTableTest, steal)
+{
+	Create();
+	const char *testKey = "foo";
+	int testValue = 1337;
+
+	g_hash_table_insert(hashTable, (gpointer) testKey, &testValue);
+	gboolean removed = g_hash_table_steal(hashTable, testKey);
+	ASSERT_TRUE(removed) << "stealing existing element from hashtable should succeed";
+	ASSERT_EQ(keyDestroyed.size(), 0) << "stolen element key should not be freed";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "stolen element value should not be freed";
+	removed = g_hash_table_steal(hashTable, testKey);
+	ASSERT_FALSE(removed) << "stealing non-existing element from hashtable should fail";
+}
+
 TEST_F(GHashTableTest, freeInserted)
 {
 	Create();
