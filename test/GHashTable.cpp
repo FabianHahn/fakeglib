@@ -160,6 +160,27 @@ TEST_F(GHashTableTest, contains)
 	ASSERT_TRUE(contains) << "hash table should contain element after it was inserted";
 }
 
+TEST_F(GHashTableTest, size)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+	
+	guint size = g_hash_table_size(hashTable);
+	ASSERT_EQ(size, 0) << "hash table should contain zero elements before an element is inserted";
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testSecondKey);
+	size = g_hash_table_size(hashTable);
+	ASSERT_EQ(size, 1) << "hash table should contain one element after an element was inserted";
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	size = g_hash_table_size(hashTable);
+	ASSERT_EQ(size, 2) << "hash table should contain two elements after two element were inserted";
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	size = g_hash_table_size(hashTable);
+	ASSERT_EQ(size, 2) << "hash table should still contain two elements after an element was replaced";
+}
+
 TEST_F(GHashTableTest, freeInserted)
 {
 	Create();

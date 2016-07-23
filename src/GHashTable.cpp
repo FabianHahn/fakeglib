@@ -121,6 +121,11 @@ FAKEGLIB_API gboolean g_hash_table_contains(GHashTable *hashTable, gconstpointer
 	return query != hashTable->map.end();
 }
 
+FAKEGLIB_API guint g_hash_table_size(GHashTable *hashTable)
+{
+	return (guint) hashTable->map.size();
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();
