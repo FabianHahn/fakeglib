@@ -197,6 +197,27 @@ TEST_F(GHashTableTest, lookup)
 	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
 }
 
+TEST_F(GHashTableTest, lookupExtended)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "foo";
+	int testValue = 1337;
+
+	gboolean found;
+	gpointer origKey = NULL;
+	gpointer value = NULL;
+	found = g_hash_table_lookup_extended(hashTable, testFirstKey, &origKey, &value);
+	ASSERT_FALSE(found) << "hash table should fail to look up entry before it is inserted";
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testValue);
+	found = g_hash_table_lookup_extended(hashTable, testSecondKey, &origKey, &value);
+	ASSERT_TRUE(found) << "hash table should look up entry after it was inserted";
+	ASSERT_EQ(testFirstKey, origKey) << "extended hash table lookup should return original key";
+	ASSERT_EQ(&testValue, value) << "extended hash table lookup should return value";
+	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
+	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+}
+
 TEST_F(GHashTableTest, freeInserted)
 {
 	Create();

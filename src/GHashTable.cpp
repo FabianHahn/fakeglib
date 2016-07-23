@@ -138,6 +138,24 @@ FAKEGLIB_API gpointer g_hash_table_lookup(GHashTable *hashTable, gconstpointer k
 	}
 }
 
+FAKEGLIB_API gboolean g_hash_table_lookup_extended(GHashTable *hashTable, gconstpointer lookupKeyValue, gpointer *origKeyValue, gpointer *mappedValue)
+{
+	GHashTableKey key = { const_cast<void *>(lookupKeyValue), &hashTable->functions };
+
+	GHashTable::Map::iterator query = hashTable->map.find(key);
+	if(query != hashTable->map.end()) {
+		if(origKeyValue != NULL) {
+			*origKeyValue = query->first.value;
+		}
+		if(mappedValue != NULL) {
+			*mappedValue = query->second.value;
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();
