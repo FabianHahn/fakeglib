@@ -345,6 +345,44 @@ TEST_F(GHashTableTest, foreachSteal)
 	ASSERT_EQ(removed, 0) << "foreach steal should be idempotent";
 }
 
+TEST_F(GHashTableTest, removeAll)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	g_hash_table_remove_all(hashTable);
+	ASSERT_EQ(keyDestroyed.size(), 2) << "removed element keys should be freed";
+	ASSERT_NE(std::find(keyDestroyed.begin(), keyDestroyed.end(), (gpointer) testFirstKey), keyDestroyed.end()) << "first key should be freed";
+	ASSERT_NE(std::find(keyDestroyed.begin(), keyDestroyed.end(), (gpointer) testSecondKey), keyDestroyed.end()) << "second key should be freed";
+	ASSERT_EQ(valueDestroyed.size(), 2) << "removed element values should be freed";
+	ASSERT_NE(std::find(valueDestroyed.begin(), valueDestroyed.end(), &testFirstValue), valueDestroyed.end()) << "first value should be freed";
+	ASSERT_NE(std::find(valueDestroyed.begin(), valueDestroyed.end(), &testSecondValue), valueDestroyed.end()) << "second value should be freed";
+	guint size = g_hash_table_size(hashTable);
+	ASSERT_EQ(size, 0) << "removing all elements should leave hash table empty";
+}
+
+TEST_F(GHashTableTest, stealAll)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	g_hash_table_steal_all(hashTable);
+	ASSERT_EQ(keyDestroyed.size(), 0) << "stolen element keys should not be freed";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "stolen element values should not be freed";
+	guint size = g_hash_table_size(hashTable);
+	ASSERT_EQ(size, 0) << "stealing all elements should leave hash table empty";
+}
+
 TEST_F(GHashTableTest, freeInserted)
 {
 	Create();

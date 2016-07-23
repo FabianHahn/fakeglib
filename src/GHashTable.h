@@ -31,6 +31,8 @@ FAKEGLIB_API gboolean g_hash_table_remove(GHashTable *hash_table, gconstpointer 
 FAKEGLIB_API gboolean g_hash_table_steal(GHashTable *hash_table, gconstpointer key);
 FAKEGLIB_API guint g_hash_table_foreach_remove(GHashTable *hash_table, GHRFunc func, gpointer user_data);
 FAKEGLIB_API guint g_hash_table_foreach_steal(GHashTable *hash_table, GHRFunc func, gpointer user_data);
+FAKEGLIB_API void g_hash_table_remove_all(GHashTable *hash_table);
+FAKEGLIB_API void g_hash_table_steal_all(GHashTable *hash_table);
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hash_table);
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2);
 FAKEGLIB_API guint g_str_hash(gconstpointer v);

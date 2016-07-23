@@ -250,6 +250,26 @@ FAKEGLIB_API guint g_hash_table_foreach_steal(GHashTable *hashTable, GHRFunc fun
 	return removed;
 }
 
+FAKEGLIB_API void g_hash_table_remove_all(GHashTable *hashTable)
+{
+	for(GHashTable::Map::iterator iter = hashTable->map.begin(); iter != hashTable->map.end();) {
+		assert(&hashTable->functions == iter->first.functions);
+		assert(&hashTable->functions == iter->second.functions);
+		if (hashTable->functions.keyDestroy != NULL) {
+			hashTable->functions.keyDestroy(iter->first.value);
+		}
+		if (hashTable->functions.mappedDestroy != NULL) {
+			hashTable->functions.mappedDestroy(iter->second.value);
+		}
+		hashTable->map.erase(iter++);
+	}
+}
+
+FAKEGLIB_API void g_hash_table_steal_all(GHashTable *hashTable)
+{
+	hashTable->map.clear();
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();
