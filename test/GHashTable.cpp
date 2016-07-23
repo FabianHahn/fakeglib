@@ -113,6 +113,11 @@ static void test_foreach_callback(gpointer key, gpointer value, gpointer userDat
 	foreachLastUserData = userData;
 }
 
+static gboolean test_find_callback(gpointer key, gpointer value, gpointer userData)
+{
+	return strcmp((const char *) key, (const char *) userData) == 0;
+}
+
 TEST_F(GHashTableTest, insert)
 {
 	Create();
@@ -251,6 +256,23 @@ TEST_F(GHashTableTest, foreach)
 	ASSERT_NE(std::find(foreachCallbacks.begin(), foreachCallbacks.end(), std::make_pair((gpointer) testFirstKey, (gpointer) &testFirstValue)), foreachCallbacks.end()) << "foreach callback should be called with first element";
 	ASSERT_NE(std::find(foreachCallbacks.begin(), foreachCallbacks.end(), std::make_pair((gpointer) testSecondKey, (gpointer) &testSecondValue)), foreachCallbacks.end()) << "foreach callback should be called with second element";
 	ASSERT_EQ(foreachLastUserData, &testUserData) << "foreach callback should pass correct user data";
+}
+
+TEST_F(GHashTableTest, find)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	const char *testThirdKey = "baz";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+	gpointer value = g_hash_table_find(hashTable, test_find_callback, (gpointer) testSecondKey);
+	ASSERT_EQ(value, &testSecondValue) << "find should find existing key in hash table";
+	value = g_hash_table_find(hashTable, test_find_callback, &testSecondKey);
+	ASSERT_TRUE(value == NULL) << "find should not find non-existing key in hash table";
 }
 
 TEST_F(GHashTableTest, freeInserted)

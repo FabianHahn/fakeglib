@@ -164,6 +164,17 @@ FAKEGLIB_API void g_hash_table_foreach(GHashTable *hashTable, GHFunc callback, g
 	}
 }
 
+FAKEGLIB_API gpointer g_hash_table_find(GHashTable *hashTable, GHRFunc predicate, gpointer userData)
+{
+	GHashTable::Map::iterator end = hashTable->map.end();
+	for(GHashTable::Map::iterator iter = hashTable->map.begin(); iter != end; ++iter) {
+		if(predicate(iter->first.value, iter->second.value, userData)) {
+			return iter->second.value;
+		}
+	}
+	return NULL;
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();

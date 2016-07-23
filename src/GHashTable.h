@@ -11,6 +11,7 @@ extern "C" {
 typedef guint (*GHashFunc)(gconstpointer key);
 typedef gboolean (*GEqualFunc)(gconstpointer a, gconstpointer b);
 typedef void (*GHFunc)(gpointer key, gpointer value, gpointer user_data);
+typedef gboolean (*GHRFunc)(gpointer key, gpointer value, gpointer user_data);
 
 struct GHashTableStruct;
 typedef struct GHashTableStruct GHashTable;
@@ -25,6 +26,7 @@ FAKEGLIB_API guint g_hash_table_size(GHashTable *hash_table);
 FAKEGLIB_API gpointer g_hash_table_lookup(GHashTable *hash_table, gconstpointer key);
 FAKEGLIB_API gboolean g_hash_table_lookup_extended(GHashTable *hash_table, gconstpointer lookup_key, gpointer *orig_key, gpointer *value);
 FAKEGLIB_API void g_hash_table_foreach(GHashTable *hash_table, GHFunc func, gpointer user_data);
+FAKEGLIB_API gpointer g_hash_table_find(GHashTable *hash_table, GHRFunc predicate, gpointer user_data);
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hash_table);
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2);
 FAKEGLIB_API guint g_str_hash(gconstpointer v);
