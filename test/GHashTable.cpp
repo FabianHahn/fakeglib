@@ -506,3 +506,55 @@ TEST_F(GHashTableTest, iterReplace)
 	hasNext = g_hash_table_iter_next(&iter, &key, &value);
 	ASSERT_FALSE(hasNext) << "hash table should have no more next element";
 }
+
+TEST_F(GHashTableTest, iterRemove)
+{
+	Create();
+	const char *testKey = "foo";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testKey, &testFirstValue);
+
+	GHashTableIter iter;
+	gpointer key;
+	gpointer value;
+	g_hash_table_iter_init(&iter, hashTable);
+	gboolean hasNext = g_hash_table_iter_next(&iter, &key, &value);
+	ASSERT_TRUE(hasNext) << "hash table iterator should find first element";
+	ASSERT_EQ(keyDestroyed.size(), 0) << "element should not have its key freed yet before removing it";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "element should not have its value freed yet before removing it";
+	g_hash_table_iter_remove(&iter);
+	ASSERT_EQ(keyDestroyed.size(), 1) << "removed element should have had its key destroyed";
+	ASSERT_EQ(keyDestroyed[0], (gpointer) testKey) << "removed element should have had its key destroyed";
+	ASSERT_EQ(valueDestroyed.size(), 1) << "removed element should have had its value destroyed";
+	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "replaced element should have had its value destroyed";
+	hasNext = g_hash_table_iter_next(&iter, &key, &value);
+	ASSERT_FALSE(hasNext) << "hash table should have no more next element";
+	guint size = g_hash_table_size(hashTable);
+	ASSERT_EQ(size, 0) << "removing only element should leave hash table empty";
+}
+
+TEST_F(GHashTableTest, iterSteal)
+{
+	Create();
+	const char *testKey = "foo";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testKey, &testFirstValue);
+
+	GHashTableIter iter;
+	gpointer key;
+	gpointer value;
+	g_hash_table_iter_init(&iter, hashTable);
+	gboolean hasNext = g_hash_table_iter_next(&iter, &key, &value);
+	ASSERT_TRUE(hasNext) << "hash table iterator should find first element";
+	g_hash_table_iter_steal(&iter);
+	ASSERT_EQ(keyDestroyed.size(), 0) << "stealing element should not cause its key to be destroyed";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "stealing element should not cause its value to be destroyed";
+	hasNext = g_hash_table_iter_next(&iter, &key, &value);
+	ASSERT_FALSE(hasNext) << "hash table should have no more next element";
+	guint size = g_hash_table_size(hashTable);
+	ASSERT_EQ(size, 0) << "stealing only element should leave hash table empty";
+}

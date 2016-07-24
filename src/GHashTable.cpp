@@ -398,6 +398,30 @@ FAKEGLIB_API void g_hash_table_iter_replace(GHashTableIter *iter, gpointer mappe
 	privateIter->iter->second.value = mappedValue;
 }
 
+FAKEGLIB_API void g_hash_table_iter_remove(GHashTableIter *iter)
+{
+	GHashTableIterPrivate *privateIter = reinterpret_cast<GHashTableIterPrivate *>(iter);
+	assert(privateIter->state == GHashTableIterPrivate::kIterating);
+	assert(&privateIter->hashTable->functions == privateIter->iter->first.functions);
+	assert(&privateIter->hashTable->functions == privateIter->iter->second.functions);
+	if(privateIter->hashTable->functions.keyDestroy != NULL) {
+		privateIter->hashTable->functions.keyDestroy(privateIter->iter->first.value);
+	}
+	if(privateIter->hashTable->functions.mappedDestroy != NULL) {
+		privateIter->hashTable->functions.mappedDestroy(privateIter->iter->second.value);
+	}
+	privateIter->hashTable->map.erase(privateIter->iter++);
+	privateIter->state = GHashTableIterPrivate::kIteratingForwarded;
+}
+
+FAKEGLIB_API void g_hash_table_iter_steal(GHashTableIter *iter)
+{
+	GHashTableIterPrivate *privateIter = reinterpret_cast<GHashTableIterPrivate *>(iter);
+	assert(privateIter->state == GHashTableIterPrivate::kIterating);
+	privateIter->hashTable->map.erase(privateIter->iter++);
+	privateIter->state = GHashTableIterPrivate::kIteratingForwarded;
+}
+
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2)
 {
 	if(v1 == NULL && v2 == NULL) {
