@@ -5,7 +5,10 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 typedef unsigned int guint;
+typedef int64_t gint64;
 typedef void * gpointer;
 typedef const void * gconstpointer;
 typedef bool gboolean;
