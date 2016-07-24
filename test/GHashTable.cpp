@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <glib.h>
 
+#include <algorithm>
 #include <vector>
 
 static guint test_hash(gconstpointer key);
