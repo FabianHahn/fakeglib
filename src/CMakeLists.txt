@@ -2,6 +2,7 @@ include(GenerateExportHeader)
 
 set(FAKEGLIB_SRC
 	GHashTable.cpp
+	GMemory.cpp
 )
 
 add_library(fakeglib SHARED ${FAKEGLIB_SRC})
