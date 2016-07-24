@@ -399,3 +399,27 @@ TEST_F(GHashTableTest, freeInserted)
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted element should have had its value destroyed";
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testValue) << "inserted element should have had its value destroyed";
 }
+
+TEST_F(GHashTableTest, getKeysAsArray)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+
+	guint length;
+	gpointer *array = g_hash_table_get_keys_as_array(hashTable, &length);
+	ASSERT_EQ(length, 2) << "stolen element keys should not be freed";
+	if(array[0] == testFirstKey) {
+		ASSERT_EQ(array[1], testSecondKey) << "array should contain keys";
+	} else {
+		ASSERT_EQ(array[0], testSecondKey) << "array should contain keys";
+		ASSERT_EQ(array[1], testFirstKey) << "array should contain keys";
+	}
+	ASSERT_TRUE(array[2] == NULL) << "array should be NULL terminated";
+	g_free(array);
+}

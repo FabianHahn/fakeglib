@@ -270,6 +270,21 @@ FAKEGLIB_API void g_hash_table_steal_all(GHashTable *hashTable)
 	hashTable->map.clear();
 }
 
+FAKEGLIB_API gpointer *g_hash_table_get_keys_as_array(GHashTable *hashTable, guint *length)
+{
+	*length = (guint) hashTable->map.size();
+	gpointer *keys = (gpointer *) malloc((*length + 1) * sizeof(gpointer));
+
+	guint i = 0;
+	GHashTable::Map::iterator end = hashTable->map.end();
+	for(GHashTable::Map::iterator iter = hashTable->map.begin(); iter != end; ++iter, ++i) {
+		keys[i] = iter->first.value;
+	}
+	keys[*length] = NULL;
+
+	return keys;
+}
+
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 {
 	GHashTable::Map::iterator end = hashTable->map.end();
