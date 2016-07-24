@@ -381,6 +381,12 @@ FAKEGLIB_API gboolean g_hash_table_iter_next(GHashTableIter *iter, gpointer *key
 	}
 }
 
+FAKEGLIB_API GHashTable *g_hash_table_iter_get_hash_table(GHashTableIter *iter)
+{
+	GHashTableIterPrivate *privateIter = reinterpret_cast<GHashTableIterPrivate *>(iter);
+	return privateIter->hashTable;
+}
+
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2)
 {
 	if(v1 == NULL && v2 == NULL) {

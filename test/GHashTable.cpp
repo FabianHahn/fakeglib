@@ -473,3 +473,13 @@ TEST_F(GHashTableTest, iter)
 	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), std::make_pair((gpointer) testFirstKey, (gpointer) &testFirstValue)), iteratedElements.end()) << "first element should have been iterated over";
 	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), std::make_pair((gpointer) testSecondKey, (gpointer) &testSecondValue)), iteratedElements.end()) << "second element should have been iterated over";
 }
+
+TEST_F(GHashTableTest, iterGetHashTable)
+{
+	Create();
+
+	GHashTableIter iter;
+	g_hash_table_iter_init(&iter, hashTable);
+	GHashTable *extractedHashTable = g_hash_table_iter_get_hash_table(&iter);
+	ASSERT_EQ(extractedHashTable, hashTable) << "hash table extracted from iterator should match hash table the iterator was created from";
+}
