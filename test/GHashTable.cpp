@@ -423,3 +423,27 @@ TEST_F(GHashTableTest, getKeysAsArray)
 	ASSERT_TRUE(array[2] == NULL) << "array should be NULL terminated";
 	g_free(array);
 }
+
+TEST_F(GHashTableTest, refUnref)
+{
+	Create();
+	const char *testKey = "foo";
+	int testValue = 1337;
+
+	g_hash_table_insert(hashTable, (gpointer) testKey, &testValue);
+	ASSERT_EQ(keyDestroyed.size(), 0) << "inserted element should not have its key destroyed yet";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "inserted element should not have its value destroyed yet";
+
+	g_hash_table_ref(hashTable);
+	ASSERT_EQ(keyDestroyed.size(), 0) << "inserted element should not have its key destroyed yet";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "inserted element should not have its value destroyed yet";
+	g_hash_table_unref(hashTable);
+	ASSERT_EQ(keyDestroyed.size(), 0) << "inserted element should not have its key destroyed yet";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "inserted element should not have its value destroyed yet";
+	g_hash_table_unref(hashTable);
+	ASSERT_EQ(keyDestroyed.size(), 1) << "inserted element should have had its key destroyed";
+	ASSERT_EQ(keyDestroyed[0], (gpointer) testKey) << "inserted element should have had its key destroyed";
+	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted element should have had its value destroyed";
+	ASSERT_EQ(valueDestroyed[0], (gpointer) &testValue) << "inserted element should have had its value destroyed";
+	created = false;
+}

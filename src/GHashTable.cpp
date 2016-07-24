@@ -45,26 +45,29 @@ struct GHashTableStruct {
 	typedef std::unordered_map< GHashTableKey, GHashTableMapped, GHashTableHash, GHashTableEqualTo> Map;
 	Map map;
 	GHashTableFunctions functions;
+	unsigned int refcount;
 };
 
 FAKEGLIB_API GHashTable *g_hash_table_new(GHashFunc hash_func, GEqualFunc key_equal_func)
 {
-	GHashTable *hashtable = new GHashTableStruct();
-	hashtable->functions.hash = hash_func;
-	hashtable->functions.equal = key_equal_func;
-	hashtable->functions.keyDestroy = NULL;
-	hashtable->functions.mappedDestroy = NULL;
-	return hashtable;
+	GHashTable *hashTable = new GHashTableStruct();
+	hashTable->functions.hash = hash_func;
+	hashTable->functions.equal = key_equal_func;
+	hashTable->functions.keyDestroy = NULL;
+	hashTable->functions.mappedDestroy = NULL;
+	hashTable->refcount = 1;
+	return hashTable;
 }
 
 FAKEGLIB_API GHashTable *g_hash_table_new_full(GHashFunc hash_func, GEqualFunc key_equal_func, GDestroyNotify key_destroy_func, GDestroyNotify value_destroy_func)
 {
-	GHashTable *hashtable = new GHashTableStruct();
-	hashtable->functions.hash = hash_func;
-	hashtable->functions.equal = key_equal_func;
-	hashtable->functions.keyDestroy = key_destroy_func;
-	hashtable->functions.mappedDestroy = value_destroy_func;
-	return hashtable;
+	GHashTable *hashTable = new GHashTableStruct();
+	hashTable->functions.hash = hash_func;
+	hashTable->functions.equal = key_equal_func;
+	hashTable->functions.keyDestroy = key_destroy_func;
+	hashTable->functions.mappedDestroy = value_destroy_func;
+	hashTable->refcount = 1;
+	return hashTable;
 }
 
 FAKEGLIB_API gboolean g_hash_table_insert(GHashTable *hashTable, gpointer keyValue, gpointer mappedValue)
@@ -299,6 +302,20 @@ FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 		}
 	}
 	delete hashTable;
+}
+
+FAKEGLIB_API GHashTable *g_hash_table_ref(GHashTable *hashTable)
+{
+	hashTable->refcount++;
+	return hashTable;
+}
+
+FAKEGLIB_API void g_hash_table_unref(GHashTable *hashTable)
+{
+	hashTable->refcount--;
+	if(hashTable->refcount == 0) {
+		g_hash_table_destroy(hashTable);
+	}
 }
 
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2)
