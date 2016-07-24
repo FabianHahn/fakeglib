@@ -483,3 +483,26 @@ TEST_F(GHashTableTest, iterGetHashTable)
 	GHashTable *extractedHashTable = g_hash_table_iter_get_hash_table(&iter);
 	ASSERT_EQ(extractedHashTable, hashTable) << "hash table extracted from iterator should match hash table the iterator was created from";
 }
+
+TEST_F(GHashTableTest, iterReplace)
+{
+	Create();
+	const char *testKey = "foo";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testKey, &testFirstValue);
+
+	GHashTableIter iter;
+	gpointer key;
+	gpointer value;
+	g_hash_table_iter_init(&iter, hashTable);
+	gboolean hasNext = g_hash_table_iter_next(&iter, &key, &value);
+	ASSERT_TRUE(hasNext) << "hash table iterator should find first element";
+	ASSERT_EQ(valueDestroyed.size(), 0) << "no value should be freed yet before replacing";
+	g_hash_table_iter_replace(&iter, &testSecondValue);
+	ASSERT_EQ(valueDestroyed.size(), 1) << "replaced element should have had its value destroyed";
+	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "replaced element should have had its value destroyed";
+	hasNext = g_hash_table_iter_next(&iter, &key, &value);
+	ASSERT_FALSE(hasNext) << "hash table should have no more next element";
+}

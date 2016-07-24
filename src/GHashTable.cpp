@@ -387,6 +387,17 @@ FAKEGLIB_API GHashTable *g_hash_table_iter_get_hash_table(GHashTableIter *iter)
 	return privateIter->hashTable;
 }
 
+FAKEGLIB_API void g_hash_table_iter_replace(GHashTableIter *iter, gpointer mappedValue)
+{
+	GHashTableIterPrivate *privateIter = reinterpret_cast<GHashTableIterPrivate *>(iter);
+	assert(privateIter->state == GHashTableIterPrivate::kIterating);
+	assert(&privateIter->hashTable->functions == privateIter->iter->second.functions);
+	if(privateIter->hashTable->functions.mappedDestroy != NULL) {
+		privateIter->hashTable->functions.mappedDestroy(privateIter->iter->second.value);
+	}
+	privateIter->iter->second.value = mappedValue;
+}
+
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2)
 {
 	if(v1 == NULL && v2 == NULL) {
