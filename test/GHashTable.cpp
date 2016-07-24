@@ -73,14 +73,18 @@ static guint test_hash(gconstpointer key)
 	return currentTest->hash(key);
 }
 
+template <typename T>
+static std::pair<T, T> make_ordered_pair(T a, T b) {
+	if(std::less<T>{}(a, b)) {
+		return std::make_pair(a, b);
+	} else {
+		return std::make_pair(b, a);
+	}
+}
+
 static gboolean test_equal(gconstpointer a, gconstpointer b)
 {
-	if(std::less<gconstpointer>{}(a, b)) {
-		currentTest->equaled.push_back(std::make_pair(a, b));
-	} else {
-		currentTest->equaled.push_back(std::make_pair(b, a));
-	}
-	
+	currentTest->equaled.push_back(make_ordered_pair(a, b));
 	return currentTest->equal(a, b);
 }
 
@@ -143,7 +147,7 @@ TEST_F(GHashTableTest, insertTwice)
 	gboolean inserted = g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
 	ASSERT_FALSE(inserted) << "twice inserted elemented should already exist";
 	ASSERT_EQ(equaled.size(), 1) << "inserted elements should have been equaled";
-	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
 	ASSERT_EQ(keyDestroyed.size(), 1) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(keyDestroyed[0], (gpointer) testSecondKey) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
@@ -162,7 +166,7 @@ TEST_F(GHashTableTest, insertReplace)
 	gboolean inserted = g_hash_table_replace(hashTable, (gpointer) testSecondKey, &testSecondValue);
 	ASSERT_FALSE(inserted) << "twice inserted elemented should already exist";
 	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
-	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
 	ASSERT_EQ(keyDestroyed.size(), 1) << "inserted second element should have replaced key of first element";
 	ASSERT_EQ(keyDestroyed[0], (gpointer) testFirstKey) << "inserted second element should have replaced key of first element";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
@@ -216,7 +220,7 @@ TEST_F(GHashTableTest, lookup)
 	value = g_hash_table_lookup(hashTable, testSecondKey);
 	ASSERT_TRUE(value == &testValue) << "hash table should look up entry after it was inserted";
 	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
-	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
 }
 
 TEST_F(GHashTableTest, lookupExtended)
@@ -237,7 +241,7 @@ TEST_F(GHashTableTest, lookupExtended)
 	ASSERT_EQ(testFirstKey, origKey) << "extended hash table lookup should return original key";
 	ASSERT_EQ(&testValue, value) << "extended hash table lookup should return value";
 	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
-	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
 }
 
 TEST_F(GHashTableTest, foreach)
@@ -588,7 +592,7 @@ TEST_F(GHashTableTest, directInsertTwice)
 	gboolean inserted = g_hash_table_insert(hashTable, (gpointer) &testKey, &testSecondValue);
 	ASSERT_FALSE(inserted) << "twice inserted elemented should already exist";
 	ASSERT_EQ(equaled.size(), 1) << "inserted elements should have been equaled";
-	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) &testKey, (gconstpointer) &testKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) &testKey, (gconstpointer) &testKey)) << "inserted elements should have been equaled";
 	ASSERT_EQ(keyDestroyed.size(), 1) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(keyDestroyed[0], (gpointer) &testKey) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
@@ -625,7 +629,7 @@ TEST_F(GHashTableTest, intInsertTwice)
 	gboolean inserted = g_hash_table_insert(hashTable, (gpointer) &testSecondKey, &testSecondValue);
 	ASSERT_FALSE(inserted) << "twice inserted elemented should already exist";
 	ASSERT_EQ(equaled.size(), 1) << "inserted elements should have been equaled";
-	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) &testFirstKey, (gconstpointer) &testSecondKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) &testFirstKey, (gconstpointer) &testSecondKey)) << "inserted elements should have been equaled";
 	ASSERT_EQ(keyDestroyed.size(), 1) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(keyDestroyed[0], (gpointer) &testSecondKey) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
@@ -662,7 +666,7 @@ TEST_F(GHashTableTest, int64InsertTwice)
 	gboolean inserted = g_hash_table_insert(hashTable, (gpointer) &testSecondKey, &testSecondValue);
 	ASSERT_FALSE(inserted) << "twice inserted elemented should already exist";
 	ASSERT_EQ(equaled.size(), 1) << "inserted elements should have been equaled";
-	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) &testFirstKey, (gconstpointer) &testSecondKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) &testFirstKey, (gconstpointer) &testSecondKey)) << "inserted elements should have been equaled";
 	ASSERT_EQ(keyDestroyed.size(), 1) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(keyDestroyed[0], (gpointer) &testSecondKey) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
@@ -699,7 +703,7 @@ TEST_F(GHashTableTest, doubleInsertTwice)
 	gboolean inserted = g_hash_table_insert(hashTable, (gpointer) &testSecondKey, &testSecondValue);
 	ASSERT_FALSE(inserted) << "twice inserted elemented should already exist";
 	ASSERT_EQ(equaled.size(), 1) << "inserted elements should have been equaled";
-	ASSERT_EQ(equaled[0], std::make_pair((gconstpointer) &testFirstKey, (gconstpointer) &testSecondKey)) << "inserted elements should have been equaled";
+	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) &testFirstKey, (gconstpointer) &testSecondKey)) << "inserted elements should have been equaled";
 	ASSERT_EQ(keyDestroyed.size(), 1) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(keyDestroyed[0], (gpointer) &testSecondKey) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
