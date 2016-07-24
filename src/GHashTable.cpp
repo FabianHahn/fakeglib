@@ -422,6 +422,88 @@ FAKEGLIB_API void g_hash_table_iter_steal(GHashTableIter *iter)
 	privateIter->state = GHashTableIterPrivate::kIteratingForwarded;
 }
 
+FAKEGLIB_API gboolean g_direct_equal(gconstpointer v1, gconstpointer v2)
+{
+	return v1 == v2;
+}
+
+FAKEGLIB_API guint g_direct_hash(gconstpointer v)
+{
+	return (guint) std::hash<gconstpointer>{}(v);
+}
+
+FAKEGLIB_API gboolean g_int_equal(gconstpointer v1, gconstpointer v2)
+{
+	if(v1 == NULL && v2 == NULL) {
+		return true;
+	}
+	if(v1 == NULL || v2 == NULL) {
+		return false;
+	}
+
+	const int& firstInt = *reinterpret_cast<const int *>(v1);
+	const int& secondInt = *reinterpret_cast<const int *>(v2);
+	return firstInt == secondInt;
+}
+
+FAKEGLIB_API guint g_int_hash(gconstpointer v)
+{
+	if(v == NULL) {
+		return 0;
+	}
+
+	const int& value = *reinterpret_cast<const int *>(v);
+	return (guint) std::hash<int>{}(value);
+}
+
+FAKEGLIB_API gboolean g_int64_equal(gconstpointer v1, gconstpointer v2)
+{
+	if(v1 == NULL && v2 == NULL) {
+		return true;
+	}
+	if(v1 == NULL || v2 == NULL) {
+		return false;
+	}
+
+	const gint64& firstInt = *reinterpret_cast<const gint64 *>(v1);
+	const gint64& secondInt = *reinterpret_cast<const gint64 *>(v2);
+	return firstInt == secondInt;
+}
+
+FAKEGLIB_API guint g_int64_hash(gconstpointer v)
+{
+	if(v == NULL) {
+		return 0;
+	}
+
+	const gint64& value = *reinterpret_cast<const gint64 *>(v);
+	return (guint) std::hash<gint64>{}(value);
+}
+
+FAKEGLIB_API gboolean g_double_equal(gconstpointer v1, gconstpointer v2)
+{
+	if(v1 == NULL && v2 == NULL) {
+		return true;
+	}
+	if(v1 == NULL || v2 == NULL) {
+		return false;
+	}
+
+	const double& firstDouble = *reinterpret_cast<const double *>(v1);
+	const double& secondDouble = *reinterpret_cast<const double *>(v2);
+	return firstDouble == secondDouble;
+}
+
+FAKEGLIB_API guint g_double_hash(gconstpointer v)
+{
+	if(v == NULL) {
+		return 0;
+	}
+
+	const double& value = *reinterpret_cast<const double *>(v);
+	return (guint) std::hash<double>{}(value);
+}
+
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2)
 {
 	if(v1 == NULL && v2 == NULL) {

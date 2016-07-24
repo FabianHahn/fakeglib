@@ -57,6 +57,14 @@ FAKEGLIB_API gboolean g_hash_table_iter_next(GHashTableIter *iter, gpointer *key
 FAKEGLIB_API void g_hash_table_iter_replace(GHashTableIter *iter, gpointer value);
 FAKEGLIB_API void g_hash_table_iter_remove(GHashTableIter *iter);
 FAKEGLIB_API void g_hash_table_iter_steal(GHashTableIter *iter);
+FAKEGLIB_API gboolean g_direct_equal(gconstpointer v1, gconstpointer v2);
+FAKEGLIB_API guint g_direct_hash(gconstpointer v);
+FAKEGLIB_API gboolean g_int_equal(gconstpointer v1, gconstpointer v2);
+FAKEGLIB_API guint g_int_hash(gconstpointer v);
+FAKEGLIB_API gboolean g_int64_equal(gconstpointer v1, gconstpointer v2);
+FAKEGLIB_API guint g_int64_hash(gconstpointer v);
+FAKEGLIB_API gboolean g_double_equal(gconstpointer v1, gconstpointer v2);
+FAKEGLIB_API guint g_double_hash(gconstpointer v);
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2);
 FAKEGLIB_API guint g_str_hash(gconstpointer v);
 
