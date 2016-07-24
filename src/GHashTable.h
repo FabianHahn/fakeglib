@@ -16,6 +16,18 @@ typedef gboolean (*GHRFunc)(gpointer key, gpointer value, gpointer user_data);
 struct GHashTableStruct;
 typedef struct GHashTableStruct GHashTable;
 
+#ifndef FAKEGLIB_G_HASH_TABLE_ITER_SIZE
+	#if _WIN32
+		#define FAKEGLIB_G_HASH_TABLE_ITER_SIZE 40
+	#else
+		#define FAKEGLIB_G_HASH_TABLE_ITER_SIZE 32
+	#endif
+#endif
+struct GHashTableIterStruct {
+	unsigned char dummy[FAKEGLIB_G_HASH_TABLE_ITER_SIZE];
+};
+typedef struct GHashTableIterStruct GHashTableIter;
+
 FAKEGLIB_API GHashTable *g_hash_table_new(GHashFunc hash_func, GEqualFunc key_equal_func);
 FAKEGLIB_API GHashTable *g_hash_table_new_full(GHashFunc hash_func, GEqualFunc key_equal_func, GDestroyNotify key_destroy_func, GDestroyNotify value_destroy_func);
 FAKEGLIB_API gboolean g_hash_table_insert(GHashTable *hash_table, gpointer key, gpointer value);
@@ -39,6 +51,8 @@ FAKEGLIB_API gpointer *g_hash_table_get_keys_as_array(GHashTable *hash_table, gu
 FAKEGLIB_API void g_hash_table_destroy(GHashTable *hash_table);
 FAKEGLIB_API GHashTable *g_hash_table_ref(GHashTable *hash_table);
 FAKEGLIB_API void g_hash_table_unref(GHashTable *hash_table);
+FAKEGLIB_API void g_hash_table_iter_init(GHashTableIter *iter, GHashTable *hash_table);
+FAKEGLIB_API gboolean g_hash_table_iter_next(GHashTableIter *iter, gpointer *key, gpointer *value);
 FAKEGLIB_API gboolean g_str_equal(gconstpointer v1, gconstpointer v2);
 FAKEGLIB_API guint g_str_hash(gconstpointer v);
 

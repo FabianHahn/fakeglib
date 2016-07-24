@@ -48,6 +48,26 @@ struct GHashTableStruct {
 	unsigned int refcount;
 };
 
+struct GHashTableIterPrivate {
+	enum State {
+		kUnknown,
+		kInitialized,
+		kIterating,
+		kIteratingForwarded
+	};
+
+	GHashTable *hashTable;
+	GHashTable::Map::iterator iter;
+	State state;
+};
+static_assert(sizeof(GHashTableIterPrivate) <= sizeof(GHashTableIter), "the size of GHashTableIterPrivate exceeds the size of GHashTableIter on your platform");
+
+template <typename T>
+inline void placementDelete(T *x)
+{
+	x->~T();
+}
+
 FAKEGLIB_API GHashTable *g_hash_table_new(GHashFunc hash_func, GEqualFunc key_equal_func)
 {
 	GHashTable *hashTable = new GHashTableStruct();
@@ -315,6 +335,49 @@ FAKEGLIB_API void g_hash_table_unref(GHashTable *hashTable)
 	hashTable->refcount--;
 	if(hashTable->refcount == 0) {
 		g_hash_table_destroy(hashTable);
+	}
+}
+
+FAKEGLIB_API void g_hash_table_iter_init(GHashTableIter *iter, GHashTable *hashTable)
+{
+	GHashTableIterPrivate *privateIter = reinterpret_cast<GHashTableIterPrivate *>(iter);
+	privateIter->hashTable = hashTable;
+	privateIter->state = GHashTableIterPrivate::kInitialized;
+}
+
+FAKEGLIB_API gboolean g_hash_table_iter_next(GHashTableIter *iter, gpointer *key, gpointer *value)
+{
+	GHashTableIterPrivate *privateIter = reinterpret_cast<GHashTableIterPrivate *>(iter);
+	
+	switch(privateIter->state) {
+		case GHashTableIterPrivate::kInitialized: {
+			new (&privateIter->iter) GHashTable::Map::iterator(privateIter->hashTable->map.begin());
+			break;
+		}
+		case GHashTableIterPrivate::kIterating: {
+			++privateIter->iter;
+			break;
+		}
+		case GHashTableIterPrivate::kIteratingForwarded: {
+			// iterator already forwarded
+			break;
+		}
+		default: {
+			assert(!"g_hash_table_iter_next: iterator in unknown state");
+			return false;
+		}
+	}
+
+	privateIter->state = GHashTableIterPrivate::kIterating;
+
+	if(privateIter->iter != privateIter->hashTable->map.end()) {
+		*key = privateIter->iter->first.value;
+		*value = privateIter->iter->second.value;
+		return true;
+	} else {
+		placementDelete(&privateIter->iter);
+		privateIter->state = GHashTableIterPrivate::kUnknown;
+		return false;
 	}
 }
 

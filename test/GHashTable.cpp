@@ -448,3 +448,28 @@ TEST_F(GHashTableTest, refUnref)
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testValue) << "inserted element should have had its value destroyed";
 	created = false;
 }
+
+TEST_F(GHashTableTest, iter)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer)testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer)testSecondKey, &testSecondValue);
+
+	GHashTableIter iter;
+	gpointer key;
+	gpointer value;
+	std::vector< std::pair<gpointer, gpointer> > iteratedElements;
+	g_hash_table_iter_init(&iter, hashTable);
+	while(g_hash_table_iter_next(&iter, &key, &value)) {
+		iteratedElements.push_back(std::make_pair(key, value));
+	}
+
+	ASSERT_EQ(iteratedElements.size(), 2) << "iterator should have iterated over two elements";
+	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), std::make_pair((gpointer) testFirstKey, (gpointer) &testFirstValue)), iteratedElements.end()) << "first element should have been iterated over";
+	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), std::make_pair((gpointer) testSecondKey, (gpointer) &testSecondValue)), iteratedElements.end()) << "second element should have been iterated over";
+}
