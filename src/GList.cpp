@@ -76,6 +76,29 @@ FAKEGLIB_API GList *g_list_insert_before(GList *list, GList *after, gpointer dat
 	}
 }
 
+FAKEGLIB_API GList *g_list_insert_sorted(GList *list, gpointer data, GCompareFunc func)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	if(list == NULL || func(list->data, data) > 0) {
+		return g_list_prepend(list, data);
+	}
+
+	GList *after;
+	for(after = list; after->next != NULL; after = after->next) {
+		if(func(after->next->data, data) > 0) {
+			break;
+		}
+	}
+
+	if(after->next == NULL) {
+		g_list_append(after, data);
+		return list;
+	} else {
+		return g_list_insert_before(list, after->next, data);
+	}
+}
+
 FAKEGLIB_API void g_list_free(GList *list)
 {
 	if(list == NULL) {

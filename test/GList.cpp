@@ -16,6 +16,30 @@ public:
 	GList *list;
 };
 
+gint test_compare_int(gconstpointer v1, gconstpointer v2)
+{
+	if(v1 == NULL && v2 == NULL) {
+		return 0;
+	}
+	if(v1 == NULL) {
+		return -1;
+	}
+	if(v2 == NULL) {
+		return 1;
+	}
+
+	const int& firstInt = *reinterpret_cast<const int *>(v1);
+	const int& secondInt = *reinterpret_cast<const int *>(v2);
+
+	if(firstInt > secondInt) {
+		return 1;
+	}
+	if(firstInt == secondInt) {
+		return 0;
+	}
+	return -1;
+}
+
 TEST_F(GListTest, append)
 {
 	int testData1 = 42;
@@ -117,6 +141,47 @@ TEST_F(GListTest, insertBefore)
 	ASSERT_EQ(second, third->prev) << "third list element should have second as previous element";
 	ASSERT_EQ(third, second->next) << "second list element should have third as next element";
 	ASSERT_EQ(third, first->prev) << "first list element should have third as previous element";
+}
+
+TEST_F(GListTest, insertSorted)
+{
+	int testData1 = 2;
+	int testData2 = 0;
+	int testData3 = 1;
+	int testData4 = 3;
+
+	list = g_list_insert_sorted(list, &testData1, test_compare_int);
+	GList *first = list;
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after inserting an element";
+	ASSERT_EQ(&testData1, first->data) << "first list element data should be set";
+	ASSERT_TRUE(first->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(first->next == NULL) << "first list element should not have a next element";
+
+	list = g_list_insert_sorted(list, &testData2, test_compare_int);
+	GList *second = list;
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after inserting an element";
+	ASSERT_NE(first, second) << "second list element should not be equal to first list element";
+	ASSERT_EQ(&testData2, second->data) << "second list element data should be set";
+	ASSERT_TRUE(second->prev == NULL) << "second list element should not have a previous element";
+	ASSERT_EQ(first, second->next) << "second list element should have first as next element";
+	ASSERT_EQ(second, first->prev) << "first list element should have second as previous element";
+
+	list = g_list_insert_sorted(list, &testData3, test_compare_int);
+	GList *third = list->next;
+	ASSERT_EQ(second, list) << "list head element should still be second after inserting third element";
+	ASSERT_EQ(&testData3, third->data) << "third list element data should be set";
+	ASSERT_EQ(first, third->next) << "third list element should have first as next element";
+	ASSERT_EQ(second, third->prev) << "third list element should have second as previous element";
+	ASSERT_EQ(third, second->next) << "second list element should have third as next element";
+	ASSERT_EQ(third, first->prev) << "first list element should have third as previous element";
+
+	list = g_list_insert_sorted(list, &testData4, test_compare_int);
+	GList *fourth = first->next;
+	ASSERT_EQ(second, list) << "list head element should still be second after inserting fourth element";
+	ASSERT_EQ(&testData4, fourth->data) << "fourth list element data should be set";
+	ASSERT_TRUE(fourth->next == NULL) << "fourth list element should not have a next element";
+	ASSERT_EQ(first, fourth->prev) << "fourth list element should have first as previous element";
+	ASSERT_EQ(fourth, first->next) << "first list element should have fourth as next element";
 }
 
 TEST_F(GListTest, first)

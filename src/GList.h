@@ -8,6 +8,8 @@ extern "C" {
 #include "api.h"
 #include "types.h"
 
+typedef gint (*GCompareFunc)(gconstpointer a, gconstpointer b);
+
 struct GListStruct {
 	gpointer data;
 	GListStruct *next;
@@ -19,6 +21,7 @@ FAKEGLIB_API GList *g_list_append(GList *list, gpointer data);
 FAKEGLIB_API GList *g_list_prepend(GList *list, gpointer data);
 FAKEGLIB_API GList *g_list_insert(GList *list, gpointer data, gint position);
 FAKEGLIB_API GList *g_list_insert_before(GList *list, GList *sibling, gpointer data);
+FAKEGLIB_API GList *g_list_insert_sorted(GList *list, gpointer data, GCompareFunc func);
 FAKEGLIB_API void g_list_free(GList *list);
 FAKEGLIB_API GList *g_list_first(GList *list);
 FAKEGLIB_API GList *g_list_last(GList *list);
