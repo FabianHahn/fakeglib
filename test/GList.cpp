@@ -37,6 +37,24 @@ TEST_F(GListTest, append)
 	ASSERT_TRUE(secondElement->next == NULL) << "second list element should not have a next element";
 }
 
+TEST_F(GListTest, prepend)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_prepend(list, &testData1);
+	GList *first = list;
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after prepending an element";
+	ASSERT_EQ(&testData1, list->data) << "first list element data should be set";
+	ASSERT_TRUE(list->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(list->next == NULL) << "first list element should not have a next element";
+	list = g_list_prepend(list, &testData2);
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after prepending an element";
+	ASSERT_EQ(&testData2, list->data) << "second list element data should be set";
+	ASSERT_TRUE(list->prev == NULL) << "second list element should not have a previous element";
+	ASSERT_EQ(first, list->next) << "second list element should have first as next element";
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;

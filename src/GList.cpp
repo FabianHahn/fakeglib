@@ -1,3 +1,4 @@
+#include <cassert> // assert
 #include <cstddef> // NULL
 
 #include "GList.h"
@@ -17,6 +18,22 @@ FAKEGLIB_API GList *g_list_append(GList *list, gpointer data)
 	} else {
 		return node;
 	}
+}
+
+FAKEGLIB_API GList *g_list_prepend(GList *list, gpointer data)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	GList *node = new GList{};
+	node->data = data;
+	node->next = list;
+	node->prev = NULL;
+
+	if(list != NULL) {
+		list->prev = node;
+	}
+
+	return node;
 }
 
 FAKEGLIB_API void g_list_free(GList *list)
