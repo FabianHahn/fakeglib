@@ -7,6 +7,7 @@ extern "C" {
 
 #include <stdint.h>
 
+typedef int gint;
 typedef unsigned int guint;
 typedef int64_t gint64;
 typedef void * gpointer;
