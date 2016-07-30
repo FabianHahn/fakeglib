@@ -52,6 +52,7 @@ FAKEGLIB_API GList *g_list_find(GList *list, gconstpointer data);
 FAKEGLIB_API GList *g_list_find_custom(GList *list, gconstpointer data, GCompareFunc func);
 FAKEGLIB_API gint g_list_position(GList *list, GList *llink);
 FAKEGLIB_API gint g_list_index(GList *list, gconstpointer data);
+#define g_list_free1 g_list_free_1
 
 #ifdef __cplusplus
 }
