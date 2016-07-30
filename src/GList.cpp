@@ -385,6 +385,16 @@ FAKEGLIB_API GList *g_list_nth(GList *list, guint n)
 	return after;
 }
 
+FAKEGLIB_API gpointer g_list_nth_data(GList *list, guint n)
+{
+	GList *nth = g_list_nth(list, n);
+	if(nth == NULL) {
+		return NULL;
+	}
+
+	return nth->data;
+}
+
 static GList *splitList(GList *list, guint firstHalfSize)
 {
 	GList *after = g_list_nth(list, firstHalfSize);

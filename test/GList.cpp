@@ -632,3 +632,26 @@ TEST_F(GListTest, nth)
 	nth = g_list_nth(list, 3);
 	ASSERT_TRUE(nth == NULL) << "3rd element should be out of bounds";
 }
+
+TEST_F(GListTest, nthData)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	gpointer nthData = g_list_nth_data(list, 0);
+	ASSERT_TRUE(nthData == NULL) << "nth data should return NULL on empty list";
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData3);
+
+	nthData = g_list_nth_data(list, 0);
+	ASSERT_EQ(&testData1, nthData) << "0th element data should be found correctly";
+	nthData = g_list_nth_data(list, 1);
+	ASSERT_EQ(&testData2, nthData) << "1st element data should be found correctly";
+	nthData = g_list_nth_data(list, 2);
+	ASSERT_EQ(&testData3, nthData) << "2nd element data should be found correctly";
+	nthData = g_list_nth_data(list, 3);
+	ASSERT_TRUE(nthData == NULL) << "3rd element data should be out of bounds";
+}
