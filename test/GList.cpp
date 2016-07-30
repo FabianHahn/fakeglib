@@ -291,6 +291,15 @@ TEST_F(GListTest, freeFull)
 	ASSERT_EQ(expectedCallbacks, freeCallbacks) << "actual callback list should match expected";
 }
 
+TEST_F(GListTest, alloc)
+{
+	GList *alloc = g_list_alloc();
+	ASSERT_TRUE(alloc->data == NULL) << "allocated element data should not be set";
+	ASSERT_TRUE(alloc->prev == NULL) << "allocated element should not have a previous element";
+	ASSERT_TRUE(alloc->next == NULL) << "allocated element should not have a next element";
+	g_list_free(alloc);
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;

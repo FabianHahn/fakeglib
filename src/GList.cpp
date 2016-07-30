@@ -206,6 +206,15 @@ FAKEGLIB_API void g_list_free_full(GList *list, GDestroyNotify freeFunc)
 	}
 }
 
+FAKEGLIB_API GList *g_list_alloc()
+{
+	GList *node = new GList{};
+	node->data = NULL;
+	node->next = NULL;
+	node->prev = NULL;
+	return node;
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {

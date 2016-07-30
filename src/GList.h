@@ -28,6 +28,7 @@ FAKEGLIB_API GList *g_list_delete_link(GList *list, GList *link_);
 FAKEGLIB_API GList *g_list_remove_all(GList *list, gconstpointer data);
 FAKEGLIB_API void g_list_free(GList *list);
 FAKEGLIB_API void g_list_free_full(GList *list, GDestroyNotify free_func);
+FAKEGLIB_API GList *g_list_alloc(void);
 FAKEGLIB_API GList *g_list_first(GList *list);
 FAKEGLIB_API GList *g_list_last(GList *list);
 
