@@ -25,6 +25,7 @@ FAKEGLIB_API GList *g_list_insert_sorted(GList *list, gpointer data, GCompareFun
 FAKEGLIB_API GList *g_list_remove(GList *list, gconstpointer data);
 FAKEGLIB_API GList *g_list_remove_link(GList *list, GList *llink);
 FAKEGLIB_API GList *g_list_delete_link(GList *list, GList *link_);
+FAKEGLIB_API GList *g_list_remove_all(GList *list, gconstpointer data);
 FAKEGLIB_API void g_list_free(GList *list);
 FAKEGLIB_API GList *g_list_first(GList *list);
 FAKEGLIB_API GList *g_list_last(GList *list);

@@ -157,6 +157,24 @@ FAKEGLIB_API GList *g_list_delete_link(GList *list, GList *link)
 	return newList;
 }
 
+FAKEGLIB_API GList *g_list_remove_all(GList *list, gconstpointer data)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	GList *newList = list;
+	for(GList *iter = list; iter != NULL;) {
+		if(iter->data == data) {
+			GList *next = iter->next;
+			newList = g_list_delete_link(newList, iter);
+			iter = next;
+		} else {
+			iter = iter->next;
+		}
+	}
+
+	return newList;
+}
+
 FAKEGLIB_API void g_list_free(GList *list)
 {
 	if(list == NULL) {

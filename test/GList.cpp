@@ -242,6 +242,29 @@ TEST_F(GListTest, deleteLink)
 	ASSERT_TRUE(list == NULL) << "list should be NULL after removing first element";
 }
 
+TEST_F(GListTest, removeAll)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+
+	list = g_list_remove_all(list, &testData2);
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after removing second element";
+	ASSERT_EQ(&testData1, list->data) << "first list element data should be set";
+	ASSERT_TRUE(list->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(list->next != NULL) << "first list element should have a next element";
+	ASSERT_EQ(&testData1, list->next->data) << "second list element data should be set";
+	ASSERT_TRUE(list->next->prev == list) << "second list element should have first as previous element";
+	ASSERT_TRUE(list->next->next == NULL) << "second list element should not have a next element";
+
+	list = g_list_remove_all(list, &testData1);
+	ASSERT_TRUE(list == NULL) << "list should be NULL after removing all elements";
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;
