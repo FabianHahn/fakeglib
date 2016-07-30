@@ -611,3 +611,24 @@ TEST_F(GListTest, last)
 	last = g_list_last(list);
 	ASSERT_NE(list, last) << "last element of list should be changed after appending an element";
 }
+
+TEST_F(GListTest, nth)
+{
+	int testData = 42;
+
+	GList *nth = g_list_nth(list, 0);
+	ASSERT_TRUE(nth == NULL) << "nth should return NULL on empty list";
+
+	list = g_list_append(list, &testData);
+	list = g_list_append(list, &testData);
+	list = g_list_append(list, &testData);
+
+	nth = g_list_nth(list, 0);
+	ASSERT_EQ(list, nth) << "0th element should be found correctly";
+	nth = g_list_nth(list, 1);
+	ASSERT_EQ(list->next, nth) << "1st element should be found correctly";
+	nth = g_list_nth(list, 2);
+	ASSERT_EQ(list->next->next, nth) << "2nd element should be found correctly";
+	nth = g_list_nth(list, 3);
+	ASSERT_TRUE(nth == NULL) << "3rd element should be out of bounds";
+}

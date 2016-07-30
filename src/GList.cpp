@@ -4,7 +4,6 @@
 
 #include "GList.h"
 
-static GList *findNodeByIndex(GList *list, guint index);
 static GList *splitList(GList *list, guint firstHalfSize);
 static GList *sortSizedList(GList *list, GCompareDataFunc compareFunc, gpointer userData, guint length);
 static gint compareByUserDataCallback(gconstpointer a, gconstpointer b, gpointer userData);
@@ -46,7 +45,7 @@ FAKEGLIB_API GList *g_list_insert(GList *list, gpointer data, gint position)
 {
 	assert(list == NULL || list->prev == NULL);
 
-	GList *after = findNodeByIndex(list, position >= 0 ? position : UINT_MAX);
+	GList *after = g_list_nth(list, position >= 0 ? position : UINT_MAX);
 	return g_list_insert_before(list, after, data);
 }
 
@@ -375,11 +374,11 @@ FAKEGLIB_API GList *g_list_last(GList *list)
 	return last;
 }
 
-static GList *findNodeByIndex(GList *list, guint index)
+FAKEGLIB_API GList *g_list_nth(GList *list, guint n)
 {
 	guint i = 0;
 	GList *after;
-	for(after = list; after != NULL && i < index; after = after->next, i++) {
+	for(after = list; after != NULL && i < n; after = after->next, i++) {
 		// nothing to do
 	}
 
@@ -388,7 +387,7 @@ static GList *findNodeByIndex(GList *list, guint index)
 
 static GList *splitList(GList *list, guint firstHalfSize)
 {
-	GList *after = findNodeByIndex(list, firstHalfSize);
+	GList *after = g_list_nth(list, firstHalfSize);
 
 	if(after != NULL) {
 		assert(after->prev != NULL);
