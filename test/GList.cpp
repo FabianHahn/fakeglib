@@ -540,6 +540,23 @@ TEST_F(GListTest, sortWithData)
 	}
 }
 
+TEST_F(GListTest, concat)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_append(list, &testData1);
+	GList *secondList = g_list_append(NULL, &testData2);
+	list = g_list_concat(list, secondList);
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after concatenating";
+	ASSERT_EQ(&testData1, list->data) << "first list element data should be set";
+	ASSERT_TRUE(list->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(list->next != NULL) << "first list element should have a next element";
+	ASSERT_EQ(&testData2, list->next->data) << "second list element data should be set";
+	ASSERT_TRUE(list->next->prev == list) << "second list element should have first as previous element";
+	ASSERT_TRUE(list->next->next == NULL) << "second list element should not have a next element";
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;

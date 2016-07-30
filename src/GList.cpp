@@ -321,6 +321,25 @@ FAKEGLIB_API GList *g_list_sort_with_data(GList *list, GCompareDataFunc compareF
 	return sortSizedList(list, compareFunc, userData, length);
 }
 
+FAKEGLIB_API GList *g_list_concat(GList *list1, GList *list2)
+{
+	assert(list1 == NULL || list1->prev == NULL);
+	assert(list2 == NULL || list2->prev == NULL);
+
+	if(list1 == NULL) {
+		return list2;
+	}
+	if(list2 == NULL) {
+		return list1;
+	}
+
+	GList *last1 = g_list_last(list1);
+	last1->next = list2;
+	list2->prev = last1;
+
+	return list1;
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {
