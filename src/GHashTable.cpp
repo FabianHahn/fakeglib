@@ -3,8 +3,11 @@
 #include <cstring> // strcmp
 #include <unordered_map>
 #include <string>
+#include <mutex>
 
 #include "GHashTable.h"
+
+static std::mutex refMutex;
 
 struct GHashTableFunctions {
 	GHashFunc hash;
@@ -46,6 +49,7 @@ struct GHashTableStruct {
 	Map map;
 	GHashTableFunctions functions;
 	unsigned int refcount;
+	std::mutex mutex;
 };
 
 struct GHashTableIterPrivate {
@@ -364,12 +368,14 @@ FAKEGLIB_API void g_hash_table_destroy(GHashTable *hashTable)
 
 FAKEGLIB_API GHashTable *g_hash_table_ref(GHashTable *hashTable)
 {
+	std::lock_guard<std::mutex> lock(refMutex);
 	hashTable->refcount++;
 	return hashTable;
 }
 
 FAKEGLIB_API void g_hash_table_unref(GHashTable *hashTable)
 {
+	std::lock_guard<std::mutex> lock(refMutex);
 	hashTable->refcount--;
 	if(hashTable->refcount == 0) {
 		g_hash_table_destroy(hashTable);
