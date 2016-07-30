@@ -14,6 +14,7 @@ typedef void * gpointer;
 typedef const void * gconstpointer;
 typedef bool gboolean;
 typedef void (*GDestroyNotify)(gpointer data);
+typedef gpointer (*GCopyFunc)(gconstpointer src, gpointer data);
 
 #ifdef __cplusplus
 }
