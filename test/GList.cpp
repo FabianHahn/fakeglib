@@ -405,6 +405,42 @@ TEST_F(GListTest, reverse)
 	ASSERT_EQ(list, reversedReversedList) << "reverse of reversed list should result in original list";
 }
 
+TEST_F(GListTest, sort)
+{
+	int testData1 = 42;
+	int testData2 = 1;
+	int testData3 = 27;
+	int testData4 = 27;
+	int testData5 = 5;
+	int testData6 = 3;
+	int testData7 = 2;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData3);
+	list = g_list_append(list, &testData4);
+	list = g_list_append(list, &testData5);
+	list = g_list_append(list, &testData6);
+	list = g_list_append(list, &testData7);
+
+	list = g_list_sort(list, test_compare_int);
+	std::vector<gpointer> expectedSolution = {&testData2, &testData7, &testData6, &testData5, &testData3, &testData4, &testData1};
+	GList *previous = NULL;
+	int i = 0;
+	for(GList *iter = list; iter != NULL; previous = iter, iter = iter->next, i++) {
+		ASSERT_EQ(expectedSolution[i], iter->data) << "sorted list element " << i << " should have expected value";
+		ASSERT_EQ(previous, iter->prev) << "sorted list element " << i << " previous pointer should be correct";
+	}
+
+	list = g_list_sort(list, test_compare_int);
+	previous = NULL;
+	i = 0;
+	for(GList *iter = list; iter != NULL; previous = iter, iter = iter->next, i++) {
+		ASSERT_EQ(expectedSolution[i], iter->data) << "resorted list element " << i << " should have expected value";
+		ASSERT_EQ(previous, iter->prev) << "resorted list element " << i << " previous pointer should be correct";
+	}
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;
