@@ -340,6 +340,15 @@ FAKEGLIB_API GList *g_list_concat(GList *list1, GList *list2)
 	return list1;
 }
 
+FAKEGLIB_API void g_list_foreach(GList *list, GFunc func, gpointer userData)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	for(GList *iter = list; iter != NULL; iter = iter->next) {
+		func(iter->data, userData);
+	}
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {

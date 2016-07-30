@@ -5,7 +5,9 @@
 
 static std::vector<gpointer> freeCallbacks;
 static std::vector<gconstpointer> copyCallbacks;
+static std::vector<gpointer> foreachCallbacks;
 static gpointer copyLastUserData;
+static gpointer foreachLastUserData;
 static gpointer compareLastUserData;
 
 class GListTest : public ::testing::Test {
@@ -70,6 +72,12 @@ static gpointer test_copy_callback(gconstpointer src, gpointer userData)
 	copyCallbacks.push_back(src);
 	copyLastUserData = userData;
 	return userData;
+}
+
+static void test_foreach_callback(gpointer data, gpointer userData)
+{
+	foreachLastUserData = userData;
+	foreachCallbacks.push_back(data);
 }
 
 TEST_F(GListTest, append)
@@ -555,6 +563,23 @@ TEST_F(GListTest, concat)
 	ASSERT_EQ(&testData2, list->next->data) << "second list element data should be set";
 	ASSERT_TRUE(list->next->prev == list) << "second list element should have first as previous element";
 	ASSERT_TRUE(list->next->next == NULL) << "second list element should not have a next element";
+}
+
+TEST_F(GListTest, foreach)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testUserData = 27;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData2);
+
+	foreachLastUserData = NULL;
+	g_list_foreach(list, test_foreach_callback, &testUserData);
+	ASSERT_EQ(&testUserData, foreachLastUserData) << "passed user data should have expected value";
+	std::vector<gpointer> expectedCallbacks = {&testData1, &testData2, &testData2};
+	ASSERT_EQ(expectedCallbacks, foreachCallbacks) << "actual callback list should match expected";
 }
 
 TEST_F(GListTest, first)

@@ -10,6 +10,7 @@ extern "C" {
 
 typedef gint (*GCompareFunc)(gconstpointer a, gconstpointer b);
 typedef gint (*GCompareDataFunc)(gconstpointer a, gconstpointer b, gpointer user_data);
+typedef void (*GFunc)(gpointer data, gpointer user_data);
 
 struct GListStruct {
 	gpointer data;
@@ -39,6 +40,7 @@ FAKEGLIB_API GList *g_list_sort(GList *list, GCompareFunc compare_func);
 FAKEGLIB_API GList *g_list_insert_sorted_with_data(GList *list, gpointer data, GCompareDataFunc func, gpointer user_data);
 FAKEGLIB_API GList *g_list_sort_with_data(GList *list, GCompareDataFunc compare_func, gpointer user_data);
 FAKEGLIB_API GList *g_list_concat(GList *list1, GList *list2);
+FAKEGLIB_API void g_list_foreach(GList *list, GFunc func, gpointer user_data);
 FAKEGLIB_API GList *g_list_first(GList *list);
 FAKEGLIB_API GList *g_list_last(GList *list);
 
