@@ -220,6 +220,17 @@ FAKEGLIB_API void g_list_free_1(GList *list)
 	delete list;
 }
 
+FAKEGLIB_API guint g_list_length(GList *list)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	guint size = 0;
+	for(GList *iter = list; iter != NULL; iter = iter->next) {
+		size++;
+	}
+	return size;
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {

@@ -300,6 +300,21 @@ TEST_F(GListTest, alloc)
 	g_list_free(alloc);
 }
 
+TEST_F(GListTest, length)
+{
+	guint length = g_list_length(list);
+	ASSERT_EQ(0, length) << "list length should be zero before inserting elements";
+	list = g_list_append(list, NULL);
+	length = g_list_length(list);
+	ASSERT_EQ(1, length) << "list length should be one after inserting an element";
+	list = g_list_append(list, NULL);
+	length = g_list_length(list);
+	ASSERT_EQ(2, length) << "list length should be two after inserting another element";
+	list = g_list_remove(list, NULL);
+	length = g_list_length(list);
+	ASSERT_EQ(1, length) << "list length should be one after deleting an element";
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;
