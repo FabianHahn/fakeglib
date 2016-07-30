@@ -671,3 +671,39 @@ TEST_F(GListTest, nthPrev)
 	nthPrev = g_list_nth_prev(list->next, 2);
 	ASSERT_TRUE(nthPrev == NULL) << "two nth previous element should be out of bounds";
 }
+
+TEST_F(GListTest, find)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+
+	GList *find = g_list_find(list, &testData1);
+	ASSERT_EQ(list, find) << "first element should be found";
+	find = g_list_find(list->next, &testData2);
+	ASSERT_EQ(list->next, find) << "second element should be found";
+	find = g_list_find(list->next, &testData3);
+	ASSERT_TRUE(find == NULL) << "unknown element should not be found";
+}
+
+TEST_F(GListTest, findCustom)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int searchData1 = testData1;
+	int searchData2 = testData2;
+	int searchData3 = 27;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+
+	GList *find = g_list_find_custom(list, &searchData1, test_compare_int);
+	ASSERT_EQ(list, find) << "first element should be found";
+	find = g_list_find_custom(list->next, &searchData2, test_compare_int);
+	ASSERT_EQ(list->next, find) << "second element should be found";
+	find = g_list_find_custom(list->next, &searchData3, test_compare_int);
+	ASSERT_TRUE(find == NULL) << "unknown element should not be found";
+}

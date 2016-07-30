@@ -48,6 +48,8 @@ FAKEGLIB_API GList *g_list_last(GList *list);
 FAKEGLIB_API GList *g_list_nth(GList *list, guint n);
 FAKEGLIB_API gpointer g_list_nth_data(GList *list, guint n);
 FAKEGLIB_API GList *g_list_nth_prev(GList *list, guint n);
+FAKEGLIB_API GList *g_list_find(GList *list, gconstpointer data);
+FAKEGLIB_API GList *g_list_find_custom(GList *list, gconstpointer data, GCompareFunc func);
 
 #ifdef __cplusplus
 }
