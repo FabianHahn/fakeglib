@@ -256,6 +256,31 @@ FAKEGLIB_API GList *g_list_copy(GList *list)
 	return newList;
 }
 
+FAKEGLIB_API GList *g_list_copy_deep(GList *list, GCopyFunc func, gpointer userData)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	GList *newList = NULL;
+	GList *newIter = NULL;
+	for(GList *iter = list; iter != NULL; iter = iter->next) {
+		GList *node = new GList{};
+		node->data = func(iter->data, userData);
+		node->next = NULL;
+		node->prev = newIter;
+
+		if(newList == NULL) {
+			newList = node;
+		}
+		if(newIter != NULL) {
+			newIter->next = node;
+		}
+
+		newIter = node;
+	}
+
+	return newList;
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {

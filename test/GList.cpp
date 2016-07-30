@@ -4,6 +4,8 @@
 #include <vector>
 
 static std::vector<gpointer> freeCallbacks;
+static std::vector<gconstpointer> copyCallbacks;
+static gpointer copyLastUserData;
 
 class GListTest : public ::testing::Test {
 public:
@@ -47,6 +49,19 @@ gint test_compare_int(gconstpointer v1, gconstpointer v2)
 static void test_free_callback(gpointer data)
 {
 	freeCallbacks.push_back(data);
+}
+
+static void test_copy_clear()
+{
+	copyCallbacks.clear();
+	copyLastUserData = NULL;
+}
+
+static gpointer test_copy_callback(gconstpointer src, gpointer userData)
+{
+	copyCallbacks.push_back(src);
+	copyLastUserData = userData;
+	return userData;
 }
 
 TEST_F(GListTest, append)
@@ -335,6 +350,34 @@ TEST_F(GListTest, copy)
 	ASSERT_NE(list, copiedList) << "copied list should not be equal to original list";
 	ASSERT_NE(list->next, copiedList->next) << "copied list second element should not be equal to original list second element";
 	g_list_free(copiedList);
+}
+
+TEST_F(GListTest, copyDeep)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testUserData = 27;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+
+	test_copy_clear();
+	GList *copiedList = g_list_copy_deep(list, test_copy_callback, &testUserData);
+	ASSERT_TRUE(copiedList != NULL) << "copied list should not be NULL";
+	ASSERT_EQ(&testUserData, copiedList->data) << "copied first list element data should be set";
+	ASSERT_TRUE(copiedList->prev == NULL) << "copied first list element should not have a previous element";
+	ASSERT_TRUE(copiedList->next != NULL) << "copied first list element should have a next element";
+	GList *secondElement = copiedList->next;
+	ASSERT_EQ(&testUserData, secondElement->data) << "copied second list element data should be set";
+	ASSERT_EQ(copiedList, secondElement->prev) << "copied second list element should have the first as previous element";
+	ASSERT_TRUE(secondElement->next == NULL) << "copied second list element should not have a next element";
+	ASSERT_NE(list, copiedList) << "copied list should not be equal to original list";
+	ASSERT_NE(list->next, copiedList->next) << "copied list second element should not be equal to original list second element";
+	g_list_free(copiedList);
+
+	std::vector<gconstpointer> expectedCallbacks = {&testData1, &testData2};
+	ASSERT_EQ(expectedCallbacks, copyCallbacks) << "actual callback list should match expected";
+	ASSERT_EQ(copyLastUserData, &testUserData) << "last copy user data should match provided user data";
 }
 
 TEST_F(GListTest, first)
