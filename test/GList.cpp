@@ -6,6 +6,7 @@
 static std::vector<gpointer> freeCallbacks;
 static std::vector<gconstpointer> copyCallbacks;
 static gpointer copyLastUserData;
+static gpointer compareLastUserData;
 
 class GListTest : public ::testing::Test {
 public:
@@ -22,8 +23,10 @@ public:
 	GList *list;
 };
 
-gint test_compare_int(gconstpointer v1, gconstpointer v2)
+static gint test_compare_int_with_data(gconstpointer v1, gconstpointer v2, gpointer userData)
 {
+	compareLastUserData = userData;
+
 	if(v1 == NULL && v2 == NULL) {
 		return 0;
 	}
@@ -44,6 +47,11 @@ gint test_compare_int(gconstpointer v1, gconstpointer v2)
 		return 0;
 	}
 	return -1;
+}
+
+static gint test_compare_int(gconstpointer v1, gconstpointer v2)
+{
+	return test_compare_int_with_data(v1, v2, NULL);
 }
 
 static void test_free_callback(gpointer data)
@@ -439,6 +447,56 @@ TEST_F(GListTest, sort)
 		ASSERT_EQ(expectedSolution[i], iter->data) << "resorted list element " << i << " should have expected value";
 		ASSERT_EQ(previous, iter->prev) << "resorted list element " << i << " previous pointer should be correct";
 	}
+}
+
+TEST_F(GListTest, insertSortedWithData)
+{
+	int testData1 = 2;
+	int testData2 = 0;
+	int testData3 = 1;
+	int testData4 = 3;
+	int testUserData = 1337;
+
+	compareLastUserData = NULL;
+	list = g_list_insert_sorted_with_data(list, &testData1, test_compare_int_with_data, &testUserData);
+	GList *first = list;
+	ASSERT_TRUE(compareLastUserData == NULL) << "user data should not have been passed when sorted inserting into empty list";
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after inserting an element";
+	ASSERT_EQ(&testData1, first->data) << "first list element data should be set";
+	ASSERT_TRUE(first->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(first->next == NULL) << "first list element should not have a next element";
+
+	compareLastUserData = NULL;
+	list = g_list_insert_sorted_with_data(list, &testData2, test_compare_int_with_data, &testUserData);
+	GList *second = list;
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after inserting an element";
+	ASSERT_NE(first, second) << "second list element should not be equal to first list element";
+	ASSERT_EQ(&testData2, second->data) << "second list element data should be set";
+	ASSERT_TRUE(second->prev == NULL) << "second list element should not have a previous element";
+	ASSERT_EQ(first, second->next) << "second list element should have first as next element";
+	ASSERT_EQ(second, first->prev) << "first list element should have second as previous element";
+
+	compareLastUserData = NULL;
+	list = g_list_insert_sorted_with_data(list, &testData3, test_compare_int_with_data, &testUserData);
+	GList *third = list->next;
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	ASSERT_EQ(second, list) << "list head element should still be second after inserting third element";
+	ASSERT_EQ(&testData3, third->data) << "third list element data should be set";
+	ASSERT_EQ(first, third->next) << "third list element should have first as next element";
+	ASSERT_EQ(second, third->prev) << "third list element should have second as previous element";
+	ASSERT_EQ(third, second->next) << "second list element should have third as next element";
+	ASSERT_EQ(third, first->prev) << "first list element should have third as previous element";
+
+	compareLastUserData = NULL;
+	list = g_list_insert_sorted_with_data(list, &testData4, test_compare_int_with_data, &testUserData);
+	GList *fourth = first->next;
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	ASSERT_EQ(second, list) << "list head element should still be second after inserting fourth element";
+	ASSERT_EQ(&testData4, fourth->data) << "fourth list element data should be set";
+	ASSERT_TRUE(fourth->next == NULL) << "fourth list element should not have a next element";
+	ASSERT_EQ(first, fourth->prev) << "fourth list element should have first as previous element";
+	ASSERT_EQ(fourth, first->next) << "first list element should have fourth as next element";
 }
 
 TEST_F(GListTest, first)

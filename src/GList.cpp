@@ -7,6 +7,7 @@
 static GList *findNodeByIndex(GList *list, guint index);
 static GList *splitList(GList *list, guint firstHalfSize);
 static GList *sortSizedList(GList *list, GCompareFunc compareFunc, guint length);
+static gint compareByUserDataCallback(gconstpointer a, gconstpointer b, gpointer userData);
 
 FAKEGLIB_API GList *g_list_append(GList *list, gpointer data)
 {
@@ -77,25 +78,7 @@ FAKEGLIB_API GList *g_list_insert_before(GList *list, GList *after, gpointer dat
 
 FAKEGLIB_API GList *g_list_insert_sorted(GList *list, gpointer data, GCompareFunc func)
 {
-	assert(list == NULL || list->prev == NULL);
-
-	if(list == NULL || func(list->data, data) > 0) {
-		return g_list_prepend(list, data);
-	}
-
-	GList *after;
-	for(after = list; after->next != NULL; after = after->next) {
-		if(func(after->next->data, data) > 0) {
-			break;
-		}
-	}
-
-	if(after->next == NULL) {
-		g_list_append(after, data);
-		return list;
-	} else {
-		return g_list_insert_before(list, after->next, data);
-	}
+	return g_list_insert_sorted_with_data(list, data, compareByUserDataCallback, func);
 }
 
 FAKEGLIB_API GList *g_list_remove(GList *list, gconstpointer data)
@@ -310,6 +293,29 @@ FAKEGLIB_API GList *g_list_sort(GList *list, GCompareFunc compareFunc)
 	return sortSizedList(list, compareFunc, length);
 }
 
+FAKEGLIB_API GList *g_list_insert_sorted_with_data(GList *list, gpointer data, GCompareDataFunc func, gpointer userData)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	if(list == NULL || func(list->data, data, userData) > 0) {
+		return g_list_prepend(list, data);
+	}
+
+	GList *after;
+	for(after = list; after->next != NULL; after = after->next) {
+		if(func(after->next->data, data, userData) > 0) {
+			break;
+		}
+	}
+
+	if(after->next == NULL) {
+		g_list_append(after, data);
+		return list;
+	} else {
+		return g_list_insert_before(list, after->next, data);
+	}
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {
@@ -411,4 +417,10 @@ static GList *sortSizedList(GList *list, GCompareFunc compareFunc, guint length)
 	sortedListIter->next = NULL;
 
 	return sortedList;
+}
+
+static gint compareByUserDataCallback(gconstpointer a, gconstpointer b, gpointer userData)
+{
+	GCompareFunc compareFunc = reinterpret_cast<GCompareFunc>(userData);
+	return compareFunc(a, b);
 }
