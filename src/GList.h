@@ -37,6 +37,7 @@ FAKEGLIB_API GList *g_list_copy_deep(GList *list, GCopyFunc func, gpointer user_
 FAKEGLIB_API GList *g_list_reverse(GList *list);
 FAKEGLIB_API GList *g_list_sort(GList *list, GCompareFunc compare_func);
 FAKEGLIB_API GList *g_list_insert_sorted_with_data(GList *list, gpointer data, GCompareDataFunc func, gpointer user_data);
+FAKEGLIB_API GList *g_list_sort_with_data(GList *list, GCompareDataFunc compare_func, gpointer user_data);
 FAKEGLIB_API GList *g_list_first(GList *list);
 FAKEGLIB_API GList *g_list_last(GList *list);
 

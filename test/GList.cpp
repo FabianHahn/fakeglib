@@ -499,6 +499,47 @@ TEST_F(GListTest, insertSortedWithData)
 	ASSERT_EQ(fourth, first->next) << "first list element should have fourth as next element";
 }
 
+TEST_F(GListTest, sortWithData)
+{
+	int testData1 = 42;
+	int testData2 = 1;
+	int testData3 = 27;
+	int testData4 = 27;
+	int testData5 = 5;
+	int testData6 = 3;
+	int testData7 = 2;
+	int testUserData = 1337;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData3);
+	list = g_list_append(list, &testData4);
+	list = g_list_append(list, &testData5);
+	list = g_list_append(list, &testData6);
+	list = g_list_append(list, &testData7);
+
+	compareLastUserData = NULL;
+	list = g_list_sort_with_data(list, test_compare_int_with_data, &testUserData);
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	std::vector<gpointer> expectedSolution = {&testData2, &testData7, &testData6, &testData5, &testData3, &testData4, &testData1};
+	GList *previous = NULL;
+	int i = 0;
+	for(GList *iter = list; iter != NULL; previous = iter, iter = iter->next, i++) {
+		ASSERT_EQ(expectedSolution[i], iter->data) << "sorted list element " << i << " should have expected value";
+		ASSERT_EQ(previous, iter->prev) << "sorted list element " << i << " previous pointer should be correct";
+	}
+
+	compareLastUserData = NULL;
+	list = g_list_sort_with_data(list, test_compare_int_with_data, &testUserData);
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	previous = NULL;
+	i = 0;
+	for(GList *iter = list; iter != NULL; previous = iter, iter = iter->next, i++) {
+		ASSERT_EQ(expectedSolution[i], iter->data) << "resorted list element " << i << " should have expected value";
+		ASSERT_EQ(previous, iter->prev) << "resorted list element " << i << " previous pointer should be correct";
+	}
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;

@@ -6,7 +6,7 @@
 
 static GList *findNodeByIndex(GList *list, guint index);
 static GList *splitList(GList *list, guint firstHalfSize);
-static GList *sortSizedList(GList *list, GCompareFunc compareFunc, guint length);
+static GList *sortSizedList(GList *list, GCompareDataFunc compareFunc, gpointer userData, guint length);
 static gint compareByUserDataCallback(gconstpointer a, gconstpointer b, gpointer userData);
 
 FAKEGLIB_API GList *g_list_append(GList *list, gpointer data)
@@ -287,10 +287,7 @@ FAKEGLIB_API GList *g_list_reverse(GList *list)
 
 FAKEGLIB_API GList *g_list_sort(GList *list, GCompareFunc compareFunc)
 {
-	assert(list == NULL || list->prev == NULL);
-
-	guint length = g_list_length(list);
-	return sortSizedList(list, compareFunc, length);
+	return g_list_sort_with_data(list, compareByUserDataCallback, compareFunc);
 }
 
 FAKEGLIB_API GList *g_list_insert_sorted_with_data(GList *list, gpointer data, GCompareDataFunc func, gpointer userData)
@@ -314,6 +311,14 @@ FAKEGLIB_API GList *g_list_insert_sorted_with_data(GList *list, gpointer data, G
 	} else {
 		return g_list_insert_before(list, after->next, data);
 	}
+}
+
+FAKEGLIB_API GList *g_list_sort_with_data(GList *list, GCompareDataFunc compareFunc, gpointer userData)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	guint length = g_list_length(list);
+	return sortSizedList(list, compareFunc, userData, length);
 }
 
 FAKEGLIB_API GList *g_list_first(GList *list)
@@ -366,7 +371,7 @@ static GList *splitList(GList *list, guint firstHalfSize)
 	return after;
 }
 
-static GList *sortSizedList(GList *list, GCompareFunc compareFunc, guint length)
+static GList *sortSizedList(GList *list, GCompareDataFunc compareFunc, gpointer userData, guint length)
 {
 	if(length < 2) {
 		return list;
@@ -379,8 +384,8 @@ static GList *sortSizedList(GList *list, GCompareFunc compareFunc, guint length)
 	assert(g_list_length(list) == firstHalfSize);
 	assert(g_list_length(secondHalf) == secondHalfSize);
 
-	GList *sortedFirstHalf = sortSizedList(list, compareFunc, firstHalfSize);
-	GList *sortedSecondHalf = sortSizedList(secondHalf, compareFunc, secondHalfSize);
+	GList *sortedFirstHalf = sortSizedList(list, compareFunc, userData, firstHalfSize);
+	GList *sortedSecondHalf = sortSizedList(secondHalf, compareFunc, userData, secondHalfSize);
 
 	GList *sortedList = NULL;
 	GList *sortedListIter = NULL;
@@ -395,7 +400,7 @@ static GList *sortSizedList(GList *list, GCompareFunc compareFunc, guint length)
 			nextNode = firstHalfIter;
 			firstHalfIter = firstHalfIter->next;
 		} else {
-			if(compareFunc(firstHalfIter->data, secondHalfIter->data) > 0) {
+			if(compareFunc(firstHalfIter->data, secondHalfIter->data, userData) > 0) {
 				nextNode = secondHalfIter;
 				secondHalfIter = secondHalfIter->next;
 			} else {
