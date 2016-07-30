@@ -43,6 +43,8 @@ FAKEGLIB_API GList *g_list_concat(GList *list1, GList *list2);
 FAKEGLIB_API void g_list_foreach(GList *list, GFunc func, gpointer user_data);
 FAKEGLIB_API GList *g_list_first(GList *list);
 FAKEGLIB_API GList *g_list_last(GList *list);
+#define g_list_previous(LIST) LIST->prev
+#define g_list_next(LIST) LIST->next
 
 #ifdef __cplusplus
 }
