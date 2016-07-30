@@ -77,7 +77,7 @@ FAKEGLIB_API GList *g_list_insert_before(GList *list, GList *after, gpointer dat
 
 FAKEGLIB_API GList *g_list_insert_sorted(GList *list, gpointer data, GCompareFunc func)
 {
-	return g_list_insert_sorted_with_data(list, data, compareByUserDataCallback, func);
+	return g_list_insert_sorted_with_data(list, data, compareByUserDataCallback, (gpointer) func);
 }
 
 FAKEGLIB_API GList *g_list_remove(GList *list, gconstpointer data)
@@ -286,7 +286,7 @@ FAKEGLIB_API GList *g_list_reverse(GList *list)
 
 FAKEGLIB_API GList *g_list_sort(GList *list, GCompareFunc compareFunc)
 {
-	return g_list_sort_with_data(list, compareByUserDataCallback, compareFunc);
+	return g_list_sort_with_data(list, compareByUserDataCallback, (gpointer) compareFunc);
 }
 
 FAKEGLIB_API GList *g_list_insert_sorted_with_data(GList *list, gpointer data, GCompareDataFunc func, gpointer userData)
