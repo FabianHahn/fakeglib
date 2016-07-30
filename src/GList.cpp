@@ -177,15 +177,33 @@ FAKEGLIB_API GList *g_list_remove_all(GList *list, gconstpointer data)
 
 FAKEGLIB_API void g_list_free(GList *list)
 {
+	assert(list == NULL || list->prev == NULL);
+
 	if(list == NULL) {
 		return;
 	}
 
-	GList *last;
-	for(last = list; last->next != NULL; last = last->next) {
-		delete last->prev;
+	for(GList *iter = list; iter != NULL;) {
+		GList *next = iter->next;
+		delete iter;
+		iter = next;
 	}
-	delete last;
+}
+
+FAKEGLIB_API void g_list_free_full(GList *list, GDestroyNotify freeFunc)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	if(list == NULL) {
+		return;
+	}
+
+	for(GList *iter = list; iter != NULL;) {
+		GList *next = iter->next;
+		freeFunc(iter->data);
+		delete iter;
+		iter = next;
+	}
 }
 
 FAKEGLIB_API GList *g_list_first(GList *list)

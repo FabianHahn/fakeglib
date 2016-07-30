@@ -1,6 +1,10 @@
 #include <gtest/gtest.h>
 #include <glib.h>
 
+#include <vector>
+
+static std::vector<gpointer> freeCallbacks;
+
 class GListTest : public ::testing::Test {
 public:
 	virtual void SetUp()
@@ -38,6 +42,11 @@ gint test_compare_int(gconstpointer v1, gconstpointer v2)
 		return 0;
 	}
 	return -1;
+}
+
+static void test_free_callback(gpointer data)
+{
+	freeCallbacks.push_back(data);
 }
 
 TEST_F(GListTest, append)
@@ -263,6 +272,23 @@ TEST_F(GListTest, removeAll)
 
 	list = g_list_remove_all(list, &testData1);
 	ASSERT_TRUE(list == NULL) << "list should be NULL after removing all elements";
+}
+
+TEST_F(GListTest, freeFull)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+
+	freeCallbacks.clear();
+	g_list_free_full(list, test_free_callback);
+	list = NULL;
+	std::vector<gpointer> expectedCallbacks = {&testData1, &testData2, &testData1, &testData2};
+	ASSERT_EQ(expectedCallbacks, freeCallbacks) << "actual callback list should match expected";
 }
 
 TEST_F(GListTest, first)
