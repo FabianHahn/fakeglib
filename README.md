@@ -16,4 +16,6 @@ The requirements for *fakeglib* are:
 
 ## What?
 *fakeglib* currently implements the following parts of [glib](https://github.com/GNOME/glib)'s [C API](https://developer.gnome.org/glib/2.48/):
-* [Hash Tables](https://developer.gnome.org/glib/2.48/glib-Hash-Tables.html) (partial)
+* [Memory Allocation](https://developer.gnome.org/glib/2.48/glib-Memory-Allocation.html) ([minimal](src/GMemory.h))
+* [Doubly-Linked Lists](https://developer.gnome.org/glib/2.48/glib-Doubly-Linked-Lists.html) ([full](src/GList.h))
+* [Hash Tables](https://developer.gnome.org/glib/2.48/glib-Hash-Tables.html) ([full](src/GHashTable.h))
