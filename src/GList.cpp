@@ -215,6 +215,11 @@ FAKEGLIB_API GList *g_list_alloc()
 	return node;
 }
 
+FAKEGLIB_API void g_list_free_1(GList *list)
+{
+	delete list;
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {
