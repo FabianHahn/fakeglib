@@ -281,6 +281,28 @@ FAKEGLIB_API GList *g_list_copy_deep(GList *list, GCopyFunc func, gpointer userD
 	return newList;
 }
 
+FAKEGLIB_API GList *g_list_reverse(GList *list)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	if(list == NULL) {
+		return NULL;
+	}
+
+	GList *iter = list;
+	while(true) {
+		GList *next = iter->next;
+		iter->next = iter->prev;
+		iter->prev = next;
+
+		if(next == NULL) {
+			return iter;
+		} else {
+			iter = next;
+		}
+	}
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {

@@ -380,6 +380,31 @@ TEST_F(GListTest, copyDeep)
 	ASSERT_EQ(copyLastUserData, &testUserData) << "last copy user data should match provided user data";
 }
 
+TEST_F(GListTest, reverse)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData3);
+	
+	GList *reversedList = g_list_reverse(list);
+	ASSERT_TRUE(reversedList != NULL) << "reversed list should not be NULL after inserting an element";
+	ASSERT_EQ(&testData3, reversedList->data) << "first reversed list element data should be set";
+	ASSERT_TRUE(reversedList->prev == NULL) << "first reversed list element should not have a previous element";
+	ASSERT_TRUE(reversedList->next != NULL) << "first reversed list element should have a next element";
+	ASSERT_EQ(&testData2, reversedList->next->data) << "second reversed list element data should be set";
+	ASSERT_EQ(reversedList, reversedList->next->prev) << "second reversed list element should have first element as previous";
+	ASSERT_TRUE(reversedList->next->next != NULL) << "second list element should have a next element";
+	ASSERT_EQ(&testData1, reversedList->next->next->data) << "third reversed list element data should be set";
+	ASSERT_EQ(reversedList->next, reversedList->next->next->prev) << "third reversed list element should have second element as previous";
+	ASSERT_TRUE(reversedList->next->next->next == NULL) << "third reversed list element should not have a next element";
+	GList *reversedReversedList = g_list_reverse(reversedList);
+	ASSERT_EQ(list, reversedReversedList) << "reverse of reversed list should result in original list";
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;

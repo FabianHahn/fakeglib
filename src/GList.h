@@ -33,6 +33,7 @@ FAKEGLIB_API void g_list_free_1(GList *list);
 FAKEGLIB_API guint g_list_length(GList *list);
 FAKEGLIB_API GList *g_list_copy(GList *list);
 FAKEGLIB_API GList *g_list_copy_deep(GList *list, GCopyFunc func, gpointer user_data);
+FAKEGLIB_API GList *g_list_reverse(GList *list);
 FAKEGLIB_API GList *g_list_first(GList *list);
 FAKEGLIB_API GList *g_list_last(GList *list);
 
