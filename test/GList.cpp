@@ -655,3 +655,19 @@ TEST_F(GListTest, nthData)
 	nthData = g_list_nth_data(list, 3);
 	ASSERT_TRUE(nthData == NULL) << "3rd element data should be out of bounds";
 }
+
+TEST_F(GListTest, nthPrev)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	
+	GList *nthPrev = g_list_nth_prev(list->next, 0);
+	ASSERT_EQ(list->next, nthPrev) << "zero nth previous element should return same element";
+	nthPrev = g_list_nth_prev(list->next, 1);
+	ASSERT_EQ(list, nthPrev) << "one nth previous element should return previous element";
+	nthPrev = g_list_nth_prev(list->next, 2);
+	ASSERT_TRUE(nthPrev == NULL) << "two nth previous element should be out of bounds";
+}

@@ -47,6 +47,7 @@ FAKEGLIB_API GList *g_list_last(GList *list);
 #define g_list_next(LIST) LIST->next
 FAKEGLIB_API GList *g_list_nth(GList *list, guint n);
 FAKEGLIB_API gpointer g_list_nth_data(GList *list, guint n);
+FAKEGLIB_API GList *g_list_nth_prev(GList *list, guint n);
 
 #ifdef __cplusplus
 }
