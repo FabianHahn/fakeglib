@@ -424,6 +424,28 @@ FAKEGLIB_API GList *g_list_find_custom(GList *list, gconstpointer data, GCompare
 	return NULL;
 }
 
+FAKEGLIB_API gint g_list_position(GList *list, GList *link)
+{
+	gint i = 0;
+	for(GList *iter = list; iter != NULL; iter = iter->next, i++) {
+		if(iter == link) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+FAKEGLIB_API gint g_list_index(GList *list, gconstpointer data)
+{
+	gint i = 0;
+	for(GList *iter = list; iter != NULL; iter = iter->next, i++) {
+		if(iter->data == data) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 static GList *splitList(GList *list, guint firstHalfSize)
 {
 	GList *after = g_list_nth(list, firstHalfSize);

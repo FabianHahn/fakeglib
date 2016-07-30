@@ -707,3 +707,20 @@ TEST_F(GListTest, findCustom)
 	find = g_list_find_custom(list->next, &searchData3, test_compare_int);
 	ASSERT_TRUE(find == NULL) << "unknown element should not be found";
 }
+
+TEST_F(GListTest, index)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+
+	gint index = g_list_index(list, &testData1);
+	ASSERT_EQ(0, index) << "index of first element should be zero";
+	index = g_list_index(list, &testData2);
+	ASSERT_EQ(1, index) << "index of second element should be one";
+	index = g_list_index(list, &testData3);
+	ASSERT_EQ(-1, index) << "index of unknown element should be minus one";
+}
