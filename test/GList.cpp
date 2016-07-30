@@ -184,6 +184,64 @@ TEST_F(GListTest, insertSorted)
 	ASSERT_EQ(fourth, first->next) << "first list element should have fourth as next element";
 }
 
+TEST_F(GListTest, remove)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_remove(list, &testData2);
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after removing second element";
+	ASSERT_EQ(&testData1, list->data) << "first list element data should be set";
+	ASSERT_TRUE(list->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(list->next == NULL) << "first list element should not have a next element";
+	list = g_list_remove(list, &testData1);
+	ASSERT_TRUE(list == NULL) << "list should be NULL after removing first element";
+}
+
+TEST_F(GListTest, removeLink)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	GList *secondElement = list->next;
+	list = g_list_remove_link(list, secondElement);
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after removing second element";
+	ASSERT_EQ(&testData1, list->data) << "first list element data should be set";
+	ASSERT_TRUE(list->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(list->next == NULL) << "first list element should not have a next element";
+	ASSERT_EQ(&testData2, secondElement->data) << "second list element data should be set";
+	ASSERT_TRUE(secondElement->prev == NULL) << "second list element should not have a previous element";
+	ASSERT_TRUE(secondElement->next == NULL) << "second list element should not have a next element";
+	GList *firstElement = list;
+	list = g_list_remove_link(list, firstElement);
+	ASSERT_TRUE(list == NULL) << "list should be NULL after removing first element";
+	ASSERT_EQ(&testData1, firstElement->data) << "first list element data should be set";
+	ASSERT_TRUE(firstElement->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(firstElement->next == NULL) << "first list element should not have a next element";
+}
+
+TEST_F(GListTest, deleteLink)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	GList *secondElement = list->next;
+	list = g_list_delete_link(list, secondElement);
+	ASSERT_TRUE(list != NULL) << "list should not be NULL after removing second element";
+	ASSERT_EQ(&testData1, list->data) << "first list element data should be set";
+	ASSERT_TRUE(list->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(list->next == NULL) << "first list element should not have a next element";
+	GList *firstElement = list;
+	list = g_list_remove_link(list, firstElement);
+	ASSERT_TRUE(list == NULL) << "list should be NULL after removing first element";
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;

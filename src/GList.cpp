@@ -99,6 +99,64 @@ FAKEGLIB_API GList *g_list_insert_sorted(GList *list, gpointer data, GCompareFun
 	}
 }
 
+FAKEGLIB_API GList *g_list_remove(GList *list, gconstpointer data)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	for(GList *iter = list; iter != NULL; iter = iter->next) {
+		if(iter->data == data) {
+			return g_list_delete_link(list, iter);
+		}
+	}
+
+	return list;
+}
+
+FAKEGLIB_API GList *g_list_remove_link(GList *list, GList *link)
+{
+	assert(list != NULL);
+	assert(link != NULL);
+
+	GList *newList = list;
+	if(list == link) {
+		newList = link->next;
+	}
+
+	if(link->next != NULL) {
+		link->next->prev = link->prev;
+	}
+	if(link->prev != NULL) {
+		link->prev->next = link->next;
+	}
+
+	link->next = NULL;
+	link->prev = NULL;
+
+	return newList;
+}
+
+FAKEGLIB_API GList *g_list_delete_link(GList *list, GList *link)
+{
+	assert(list != NULL);
+	assert(link != NULL);
+
+	GList *newList = list;
+	if(list == link) {
+		newList = link->next;
+	}
+
+	if(link->next != NULL) {
+		link->next->prev = link->prev;
+	}
+	if(link->prev != NULL) {
+		link->prev->next = link->next;
+	}
+
+	delete link;
+
+	return newList;
+}
+
 FAKEGLIB_API void g_list_free(GList *list)
 {
 	if(list == NULL) {
