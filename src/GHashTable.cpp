@@ -293,6 +293,44 @@ FAKEGLIB_API void g_hash_table_steal_all(GHashTable *hashTable)
 	hashTable->map.clear();
 }
 
+FAKEGLIB_API GList *g_hash_table_get_keys(GHashTable *hashTable)
+{
+	GList *keysList = NULL;
+	GList *keysListIter = NULL;
+
+	GHashTable::Map::iterator end = hashTable->map.end();
+	for(GHashTable::Map::iterator iter = hashTable->map.begin(); iter != end; ++iter) {
+		if(keysList == NULL) {
+			keysList = g_list_append(keysListIter, iter->first.value);
+			keysListIter = keysList;
+		} else {
+			g_list_append(keysListIter, iter->first.value);
+			keysListIter = keysListIter->next;
+		}
+	}
+
+	return keysList;
+}
+
+FAKEGLIB_API GList *g_hash_table_get_values(GHashTable *hashTable)
+{
+	GList *valuesList = NULL;
+	GList *valuesListIter = NULL;
+
+	GHashTable::Map::iterator end = hashTable->map.end();
+	for(GHashTable::Map::iterator iter = hashTable->map.begin(); iter != end; ++iter) {
+		if(valuesList == NULL) {
+			valuesList = g_list_append(valuesListIter, iter->second.value);
+			valuesListIter = valuesList;
+		} else {
+			g_list_append(valuesListIter, iter->second.value);
+			valuesListIter = valuesListIter->next;
+		}
+	}
+
+	return valuesList;
+}
+
 FAKEGLIB_API gpointer *g_hash_table_get_keys_as_array(GHashTable *hashTable, guint *length)
 {
 	*length = (guint) hashTable->map.size();

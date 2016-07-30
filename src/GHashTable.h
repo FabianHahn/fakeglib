@@ -7,6 +7,7 @@ extern "C" {
 
 #include "api.h"
 #include "types.h"
+#include "GList.h"
 
 typedef guint (*GHashFunc)(gconstpointer key);
 typedef gboolean (*GEqualFunc)(gconstpointer a, gconstpointer b);
@@ -45,6 +46,8 @@ FAKEGLIB_API guint g_hash_table_foreach_remove(GHashTable *hash_table, GHRFunc f
 FAKEGLIB_API guint g_hash_table_foreach_steal(GHashTable *hash_table, GHRFunc func, gpointer user_data);
 FAKEGLIB_API void g_hash_table_remove_all(GHashTable *hash_table);
 FAKEGLIB_API void g_hash_table_steal_all(GHashTable *hash_table);
+FAKEGLIB_API GList *g_hash_table_get_keys(GHashTable *hash_table);
+FAKEGLIB_API GList *g_hash_table_get_values(GHashTable *hash_table);
 FAKEGLIB_API gpointer *g_hash_table_get_keys_as_array(GHashTable *hash_table, guint *length);
 #define g_hash_table_freeze(hash_table)
 #define g_hash_table_thaw(hash_table)

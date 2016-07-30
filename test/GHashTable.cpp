@@ -405,6 +405,46 @@ TEST_F(GHashTableTest, freeInserted)
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testValue) << "inserted element should have had its value destroyed";
 }
 
+TEST_F(GHashTableTest, getKeys)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+
+	GList *keysList = g_hash_table_get_keys(hashTable);
+	ASSERT_EQ(2, g_list_length(keysList)) << "keys array should have size 2";
+	GList *firstKeyElement = g_list_find(keysList, (gpointer) testFirstKey);
+	ASSERT_TRUE(firstKeyElement != NULL) << "first key should be in keys list";
+	GList *secondKeyElement = g_list_find(keysList, (gpointer) testSecondKey);
+	ASSERT_TRUE(secondKeyElement != NULL) << "second key should be in keys list";
+	g_list_free(keysList);
+}
+
+TEST_F(GHashTableTest, getValues)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+
+	GList *valuesList = g_hash_table_get_values(hashTable);
+	ASSERT_EQ(2, g_list_length(valuesList)) << "values array should have size 2";
+	GList *firstKeyElement = g_list_find(valuesList, &testFirstValue);
+	ASSERT_TRUE(firstKeyElement != NULL) << "first value should be in values list";
+	GList *secondKeyElement = g_list_find(valuesList, &testSecondValue);
+	ASSERT_TRUE(secondKeyElement != NULL) << "second value should be in values list";
+	g_list_free(valuesList);
+}
+
 TEST_F(GHashTableTest, getKeysAsArray)
 {
 	Create();
@@ -418,7 +458,7 @@ TEST_F(GHashTableTest, getKeysAsArray)
 
 	guint length;
 	gpointer *array = g_hash_table_get_keys_as_array(hashTable, &length);
-	ASSERT_EQ(length, 2) << "stolen element keys should not be freed";
+	ASSERT_EQ(length, 2) << "keys array should have size 2";
 	if(array[0] == testFirstKey) {
 		ASSERT_EQ(array[1], testSecondKey) << "array should contain keys";
 	} else {
