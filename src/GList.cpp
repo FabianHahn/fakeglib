@@ -231,6 +231,31 @@ FAKEGLIB_API guint g_list_length(GList *list)
 	return size;
 }
 
+FAKEGLIB_API GList *g_list_copy(GList *list)
+{
+	assert(list == NULL || list->prev == NULL);
+
+	GList *newList = NULL;
+	GList *newIter = NULL;
+	for(GList *iter = list; iter != NULL; iter = iter->next) {
+		GList *node = new GList{};
+		node->data = iter->data;
+		node->next = NULL;
+		node->prev = newIter;
+
+		if(newList == NULL) {
+			newList = node;
+		}
+		if(newIter != NULL) {
+			newIter->next = node;
+		}
+
+		newIter = node;
+	}
+
+	return newList;
+}
+
 FAKEGLIB_API GList *g_list_first(GList *list)
 {
 	if(list == NULL) {

@@ -315,6 +315,28 @@ TEST_F(GListTest, length)
 	ASSERT_EQ(1, length) << "list length should be one after deleting an element";
 }
 
+TEST_F(GListTest, copy)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+
+	GList *copiedList = g_list_copy(list);
+	ASSERT_TRUE(copiedList != NULL) << "copied list should not be NULL";
+	ASSERT_EQ(&testData1, copiedList->data) << "copied first list element data should be set";
+	ASSERT_TRUE(copiedList->prev == NULL) << "copied first list element should not have a previous element";
+	ASSERT_TRUE(copiedList->next != NULL) << "copied first list element should have a next element";
+	GList *secondElement = copiedList->next;
+	ASSERT_EQ(&testData2, secondElement->data) << "copied second list element data should be set";
+	ASSERT_EQ(copiedList, secondElement->prev) << "copied second list element should have the first as previous element";
+	ASSERT_TRUE(secondElement->next == NULL) << "copied second list element should not have a next element";
+	ASSERT_NE(list, copiedList) << "copied list should not be equal to original list";
+	ASSERT_NE(list->next, copiedList->next) << "copied list second element should not be equal to original list second element";
+	g_list_free(copiedList);
+}
+
 TEST_F(GListTest, first)
 {
 	int testData = 42;
