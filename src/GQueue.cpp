@@ -27,3 +27,11 @@ FAKEGLIB_API void g_queue_init(GQueue *queue)
 	queue->tail = NULL;
 	queue->length = 0;
 }
+
+FAKEGLIB_API void g_queue_clear(GQueue *queue)
+{
+	g_list_free(queue->head);
+	queue->head = NULL;
+	queue->tail = NULL;
+	queue->length = 0;
+}

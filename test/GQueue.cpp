@@ -62,3 +62,20 @@ TEST_F(GQueueTest, init)
 	ASSERT_EQ(0, staticQueue.length) << "init should set queue length to zero";
 }
 
+TEST_F(GQueueTest, clear)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	queue->head = list;
+	queue->tail = list->next;
+	queue->length = 2;
+
+	g_queue_clear(queue);
+	ASSERT_TRUE(queue->head == NULL) << "clear should set queue head to NULL";
+	ASSERT_TRUE(queue->tail == NULL) << "clear should set queue tail to NULL";
+	ASSERT_EQ(0, queue->length) << "clear should set queue length to zero";
+}

@@ -21,6 +21,7 @@ FAKEGLIB_API GQueue *g_queue_new(void);
 FAKEGLIB_API void g_queue_free(GQueue *queue);
 FAKEGLIB_API void g_queue_free_full(GQueue *queue, GDestroyNotify free_func);
 FAKEGLIB_API void g_queue_init(GQueue *queue);
+FAKEGLIB_API void g_queue_clear(GQueue *queue);
 #define G_QUEUE_INIT { NULL, NULL, 0 }
 
 #ifdef __cplusplus
