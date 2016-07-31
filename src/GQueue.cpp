@@ -1,3 +1,4 @@
+#include <cassert> // assert
 #include <climits> // UINT_MAX
 
 #include "GQueue.h"
@@ -144,4 +145,43 @@ FAKEGLIB_API void g_queue_push_nth(GQueue *queue, gpointer data, gint position)
 	}
 
 	queue->length++;
+}
+
+FAKEGLIB_API gpointer g_queue_pop_head(GQueue *queue)
+{
+	if(queue->length == 0) {
+		return NULL;
+	}
+
+	assert(queue->head != NULL);
+
+	gpointer data = queue->head->data;
+
+	queue->head = g_list_delete_link(queue->head, queue->head);
+
+	if(queue->head == NULL) {
+		queue->tail = NULL;
+	}
+
+	queue->length--;
+
+	return data;
+}
+
+FAKEGLIB_API gpointer g_queue_pop_tail(GQueue *queue)
+{
+	if(queue->length == 0) {
+		return NULL;
+	}
+
+	GList *tail = queue->tail;
+	assert(tail != NULL);
+
+	gpointer data = tail->data;
+	
+	queue->tail = tail->prev;
+	queue->head = g_list_delete_link(queue->head, tail);
+	queue->length--;
+
+	return data;
 }
