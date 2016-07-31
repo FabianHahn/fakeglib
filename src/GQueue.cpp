@@ -52,3 +52,30 @@ FAKEGLIB_API void g_queue_reverse(GQueue *queue)
 	queue->tail = queue->head;
 	queue->head = reversedList;
 }
+
+FAKEGLIB_API GQueue *g_queue_copy(GQueue *queue)
+{
+	GList *newList = NULL;
+	GList *newIter = NULL;
+	for(GList *iter = queue->head; iter != NULL; iter = iter->next) {
+		GList *node = new GList{};
+		node->data = iter->data;
+		node->next = NULL;
+		node->prev = newIter;
+
+		if(newList == NULL) {
+			newList = node;
+		}
+		if(newIter != NULL) {
+			newIter->next = node;
+		}
+
+		newIter = node;
+	}
+
+	GQueue *copiedQueue = new GQueue{};
+	copiedQueue->head = newList;
+	copiedQueue->tail = newIter;
+	copiedQueue->length = queue->length;
+	return copiedQueue;
+}

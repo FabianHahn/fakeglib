@@ -144,3 +144,28 @@ TEST_F(GQueueTest, reverse)
 	g_queue_reverse(queue);
 	ASSERT_EQ(list, queue->head) << "reverse of reversed queue should result in original queue";
 }
+
+TEST_F(GQueueTest, copy)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	queue->head = list;
+	queue->tail = list->next->next;
+	queue->length = 2;
+
+	GQueue *copiedQueue = g_queue_copy(queue);
+	ASSERT_EQ(&testData1, copiedQueue->head->data) << "copied first queue element data should be set";
+	ASSERT_TRUE(copiedQueue->head->prev == NULL) << "copied first queue element should not have a previous element";
+	ASSERT_TRUE(copiedQueue->head->next != NULL) << "copied first queue element should have a next element";
+	ASSERT_EQ(copiedQueue->tail, copiedQueue->head->next) << "copied first queue element next should be equal to queue tail";
+	ASSERT_EQ(&testData2, copiedQueue->tail->data) << "copied second queue element data should be set";
+	ASSERT_EQ(copiedQueue->head, copiedQueue->tail->prev) << "copied second queue element should have the first as previous element";
+	ASSERT_TRUE(copiedQueue->tail->next == NULL) << "copied second queue element should not have a next element";
+	ASSERT_NE(queue->head, copiedQueue->head) << "copied queue should not be equal to original queue";
+	ASSERT_NE(queue->tail, copiedQueue->tail) << "copied queue second element should not be equal to original queue second element";
+	g_queue_free(copiedQueue);
+}
