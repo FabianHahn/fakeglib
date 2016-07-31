@@ -236,3 +236,8 @@ FAKEGLIB_API gpointer g_queue_peek_nth(GQueue *queue, guint n)
 	assert(nth != NULL);
 	return nth->data;
 }
+
+FAKEGLIB_API gint g_queue_index(GQueue *queue, gconstpointer data)
+{
+	return g_list_index(queue->head, data);
+}

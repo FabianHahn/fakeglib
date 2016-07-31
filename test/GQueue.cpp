@@ -497,3 +497,24 @@ TEST_F(GQueueTest, peek)
 	data = g_queue_peek_nth(queue, 1);
 	ASSERT_EQ(&testData2, data) << "peeking at the second element of the queue should produce expected value";
 }
+
+TEST_F(GQueueTest, index)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	queue->head = list;
+	queue->tail = g_list_last(list);
+	queue->length = 2;
+
+	gint index = g_queue_index(queue, &testData1);
+	ASSERT_EQ(0, index) << "index of first element should be zero";
+	index = g_queue_index(queue, &testData2);
+	ASSERT_EQ(1, index) << "index of second element should be one";
+	index = g_queue_index(queue, &testData3);
+	ASSERT_EQ(-1, index) << "index of unknown element should be minus one";
+}
