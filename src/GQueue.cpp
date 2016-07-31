@@ -45,3 +45,10 @@ FAKEGLIB_API guint g_queue_get_length(GQueue *queue)
 {
 	return queue->length;
 }
+
+FAKEGLIB_API void g_queue_reverse(GQueue *queue)
+{
+	GList *reversedList = g_list_reverse(queue->head);
+	queue->tail = queue->head;
+	queue->head = reversedList;
+}

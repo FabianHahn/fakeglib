@@ -113,3 +113,34 @@ TEST_F(GQueueTest, getLength)
 	length = g_queue_get_length(queue);
 	ASSERT_EQ(1, length) << "queue with element should have length one";
 }
+
+TEST_F(GQueueTest, reverse)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData3);
+	queue->head = list;
+	queue->tail = list->next->next;
+	queue->length = 3;
+
+	g_queue_reverse(queue);
+	ASSERT_EQ(3, queue->length) << "reversed queue should still have length three";
+	ASSERT_EQ(list, queue->tail) << "reversed queue tail should be original head";
+	ASSERT_EQ(&testData3, queue->head->data) << "first reversed queue element data should be set";
+	ASSERT_TRUE(queue->head->prev == NULL) << "first reversed queue element should not have a previous element";
+	ASSERT_TRUE(queue->head->next != NULL) << "first reversed queue element should have a next element";
+	ASSERT_EQ(&testData2, queue->head->next->data) << "second reversed queue element data should be set";
+	ASSERT_EQ(queue->head, queue->head->next->prev) << "second reversed queue element should have first element as previous";
+	ASSERT_TRUE(queue->head->next->next != NULL) << "second queue element should have a next element";
+	ASSERT_EQ(queue->tail, queue->head->next->next) << "last element should be equal to queue tail";
+	ASSERT_EQ(&testData1, queue->tail->data) << "third reversed queue element data should be set";
+	ASSERT_EQ(queue->head->next, queue->tail->prev) << "third reversed queue element should have second element as previous";
+	ASSERT_TRUE(queue->tail->next == NULL) << "third reversed queue element should not have a next element";
+	g_queue_reverse(queue);
+	ASSERT_EQ(list, queue->head) << "reverse of reversed queue should result in original queue";
+}

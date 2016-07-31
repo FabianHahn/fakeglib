@@ -24,6 +24,7 @@ FAKEGLIB_API void g_queue_init(GQueue *queue);
 FAKEGLIB_API void g_queue_clear(GQueue *queue);
 FAKEGLIB_API gboolean g_queue_is_empty(GQueue *queue);
 FAKEGLIB_API guint g_queue_get_length(GQueue *queue);
+FAKEGLIB_API void g_queue_reverse(GQueue *queue);
 #define G_QUEUE_INIT { NULL, NULL, 0 }
 
 #ifdef __cplusplus
