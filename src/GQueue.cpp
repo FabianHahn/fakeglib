@@ -379,3 +379,47 @@ FAKEGLIB_API void g_queue_push_nth_link(GQueue *queue, gint position, GList *lin
 		queue->length++;
 	}
 }
+
+FAKEGLIB_API GList *g_queue_pop_head_link(GQueue *queue)
+{
+	if(queue->length == 0) {
+		return NULL;
+	}
+
+	GList *head = queue->head;
+	queue->head = queue->head->next;
+
+	if(queue->head == NULL) {
+		queue->tail = NULL;
+	} else {
+		queue->head->prev = NULL;
+	}
+
+	queue->length--;
+
+	head->next = NULL;
+	head->prev = NULL;
+	return head;
+}
+
+FAKEGLIB_API GList *g_queue_pop_tail_link(GQueue *queue)
+{
+	if(queue->length == 0) {
+		return NULL;
+	}
+
+	GList *tail = queue->tail;
+	queue->tail = queue->tail->prev;
+
+	if(queue->tail == NULL) {
+		queue->head = NULL;
+	} else {
+		queue->tail->next = NULL;
+	}
+
+	queue->length--;
+
+	tail->next = NULL;
+	tail->prev = NULL;
+	return tail;
+}
