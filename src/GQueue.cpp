@@ -466,3 +466,9 @@ FAKEGLIB_API void g_queue_unlink(GQueue *queue, GList *link)
 	link->next = NULL;
 	link->prev = NULL;
 }
+
+FAKEGLIB_API void g_queue_delete_link(GQueue *queue, GList *link)
+{
+	g_queue_unlink(queue, link);
+	delete link;
+}
