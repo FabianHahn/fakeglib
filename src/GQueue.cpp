@@ -283,3 +283,22 @@ FAKEGLIB_API guint g_queue_remove_all(GQueue *queue, gconstpointer data)
 
 	return removed;
 }
+
+FAKEGLIB_API void g_queue_insert_before(GQueue *queue, GList *sibling, gpointer data)
+{
+	if(sibling == NULL) {
+		g_queue_push_tail(queue, data);
+	} else {
+		queue->head = g_list_insert_before(queue->head, sibling, data);
+		queue->length++;
+	}
+}
+
+FAKEGLIB_API void g_queue_insert_after(GQueue *queue, GList *sibling, gpointer data)
+{
+	if(sibling == NULL) {
+		g_queue_push_head(queue, data);
+	} else {
+		g_queue_insert_before(queue, sibling->next, data);
+	}
+}
