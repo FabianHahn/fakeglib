@@ -550,3 +550,42 @@ TEST_F(GQueueTest, remove)
 	ASSERT_TRUE(queue->tail == NULL) << "queue tail should be NULL after removing first element";
 	ASSERT_EQ(0, queue->length) << "queue length should be zero after removing another element";
 }
+
+TEST_F(GQueueTest, removeAll)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	queue->head = list;
+	queue->tail = g_list_last(list);
+	queue->length = 4;
+
+	guint removed = g_queue_remove_all(queue, &testData2);
+	ASSERT_EQ(2, removed) << "remove all should have removed two elements";
+	ASSERT_TRUE(queue->head != NULL) << "queue head should not be NULL after removing two elements";
+	ASSERT_NE(queue->head, queue->tail) << "queue tail should not be equal to queue head after removing two elements";
+	ASSERT_EQ(&testData1, queue->head->data) << "first queue element data should be set";
+	ASSERT_TRUE(queue->head->prev == NULL) << "first queue element should not have a previous element";
+	ASSERT_EQ(queue->tail, queue->head->next) << "first queue element should have tail as next element";
+	ASSERT_EQ(&testData1, queue->tail->data) << "second queue element data should be set";
+	ASSERT_EQ(queue->head, queue->tail->prev) << "second queue element should have first as previous element";
+	ASSERT_TRUE(queue->tail->next == NULL) << "second queue element should not have a next element";
+	ASSERT_EQ(2, queue->length) << "queue should have two elements remaining after removing first two";
+
+	removed = g_queue_remove_all(queue, &testData1);
+	ASSERT_EQ(2, removed) << "remove all should have removed two elements";
+	ASSERT_TRUE(queue->head == NULL) << "queue head should be NULL after removing all elements";
+	ASSERT_TRUE(queue->tail == NULL) << "queue tail should be NULL after removing all elements";
+	ASSERT_EQ(0, queue->length) << "queue length should be zero after removing all elements";
+
+	removed = g_queue_remove_all(queue, &testData1);
+	ASSERT_EQ(0, removed) << "remove all should no longer remove elements from empty queue";
+
+	removed = g_queue_remove_all(queue, &testData2);
+	ASSERT_EQ(0, removed) << "remove all should no longer remove elements from empty queue";
+}

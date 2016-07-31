@@ -258,3 +258,28 @@ FAKEGLIB_API gboolean g_queue_remove(GQueue *queue, gconstpointer data)
 
 	return false;
 }
+
+FAKEGLIB_API guint g_queue_remove_all(GQueue *queue, gconstpointer data)
+{
+	guint removed = 0;
+
+	for(GList *iter = queue->head; iter != NULL;) {
+		if(iter->data == data) {
+			GList *next = iter->next;
+
+			if(iter == queue->tail) {
+				queue->tail = queue->tail->prev;
+			}
+
+			queue->head = g_list_delete_link(queue->head, iter);
+			queue->length--;
+			removed++;
+
+			iter = next;
+		} else {
+			iter = iter->next;
+		}
+	}
+
+	return removed;
+}
