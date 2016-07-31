@@ -901,3 +901,20 @@ TEST_F(GQueueTest, peekLink)
 	link = g_queue_peek_nth_link(queue, 1);
 	ASSERT_EQ(queue->tail, link) << "peeking at the second element of the queue should produce expected element";
 }
+
+TEST_F(GQueueTest, linkIndex)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	g_queue_push_tail(queue, &testData1);
+	g_queue_push_tail(queue, &testData2);
+
+	gint index = g_queue_link_index(queue, queue->head);
+	ASSERT_EQ(0, index) << "index of head element should be zero";
+	index = g_queue_link_index(queue, queue->tail);
+	ASSERT_EQ(1, index) << "index of tail element should be one";
+	index = g_queue_link_index(queue, NULL);
+	ASSERT_EQ(-1, index) << "index of unknown element should be minus one";
+}

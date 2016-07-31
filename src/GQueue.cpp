@@ -466,3 +466,14 @@ FAKEGLIB_API GList *g_queue_peek_nth_link(GQueue *queue, guint n)
 {
 	return g_list_nth(queue->head, n);
 }
+
+FAKEGLIB_API gint g_queue_link_index(GQueue *queue, GList *link)
+{
+	gint index = 0;
+	for(GList *iter = queue->head; iter != NULL; iter = iter->next, index++) {
+		if(iter == link) {
+			return index;
+		}
+	}
+	return -1;
+}
