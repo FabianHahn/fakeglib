@@ -204,3 +204,24 @@ TEST_F(GQueueTest, foreach)
 	std::vector<gpointer> expectedCallbacks = {&testData1, &testData2, &testData2};
 	ASSERT_EQ(expectedCallbacks, foreachCallbacks) << "actual callback list should match expected";
 }
+
+TEST_F(GQueueTest, find)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	queue->head = list;
+	queue->tail = list->next->next;
+	queue->length = 2;
+
+	GList *find = g_queue_find(queue, &testData1);
+	ASSERT_EQ(list, find) << "first element should be found";
+	find = g_queue_find(queue, &testData2);
+	ASSERT_EQ(list->next, find) << "second element should be found";
+	find = g_queue_find(queue, &testData3);
+	ASSERT_TRUE(find == NULL) << "unknown element should not be found";
+}

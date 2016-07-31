@@ -84,3 +84,8 @@ FAKEGLIB_API void g_queue_foreach(GQueue *queue, GFunc func, gpointer userData)
 {
 	g_list_foreach(queue->head, func, userData);
 }
+
+FAKEGLIB_API GList *g_queue_find(GQueue *queue, gconstpointer data)
+{
+	return g_list_find(queue->head, data);
+}
