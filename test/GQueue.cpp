@@ -918,3 +918,29 @@ TEST_F(GQueueTest, linkIndex)
 	index = g_queue_link_index(queue, NULL);
 	ASSERT_EQ(-1, index) << "index of unknown element should be minus one";
 }
+
+TEST_F(GQueueTest, unlink)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	g_queue_push_tail(queue, &testData1);
+	g_queue_push_tail(queue, &testData2);
+	g_queue_push_tail(queue, &testData3);
+
+	GList *middle = queue->head->next;
+	g_queue_unlink(queue, middle);
+	ASSERT_EQ(&testData2, middle->data) << "unlinked queue head should have correct value";
+	ASSERT_TRUE(middle->next == NULL) << "unlinked queue head should not have a next element";
+	ASSERT_TRUE(middle->prev == NULL) << "unlinked queue head should not have a next element";
+	ASSERT_TRUE(queue->head != NULL) << "queue head should not be NULL after removing one element";
+	ASSERT_NE(queue->head, queue->tail) << "queue tail should not be equal to head after removing one element";
+	ASSERT_EQ(&testData1, queue->head->data) << "queue head data should be set correctly";
+	ASSERT_EQ(queue->tail, queue->head->next) << "queue head element next should be tail";
+	ASSERT_TRUE(queue->head->prev == NULL) << "queue head should not have a previous element";
+	ASSERT_EQ(&testData3, queue->tail->data) << "queue tail data should be set correctly";
+	ASSERT_EQ(queue->head, queue->tail->prev) << "queue tail element previous should be head";
+	ASSERT_TRUE(queue->tail->next == NULL) << "queue tail should not have a next element";
+	ASSERT_EQ(2, queue->length) << "queue should have one element left after unlinking one";
+}

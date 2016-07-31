@@ -387,18 +387,9 @@ FAKEGLIB_API GList *g_queue_pop_head_link(GQueue *queue)
 	}
 
 	GList *head = queue->head;
-	queue->head = queue->head->next;
+	assert(head != NULL);
 
-	if(queue->head == NULL) {
-		queue->tail = NULL;
-	} else {
-		queue->head->prev = NULL;
-	}
-
-	queue->length--;
-
-	head->next = NULL;
-	head->prev = NULL;
+	g_queue_unlink(queue, head);
 	return head;
 }
 
@@ -409,18 +400,9 @@ FAKEGLIB_API GList *g_queue_pop_tail_link(GQueue *queue)
 	}
 
 	GList *tail = queue->tail;
-	queue->tail = queue->tail->prev;
+	assert(tail != NULL);
 
-	if(queue->tail == NULL) {
-		queue->head = NULL;
-	} else {
-		queue->tail->next = NULL;
-	}
-
-	queue->length--;
-
-	tail->next = NULL;
-	tail->prev = NULL;
+	g_queue_unlink(queue, tail);
 	return tail;
 }
 
@@ -433,22 +415,7 @@ FAKEGLIB_API GList *g_queue_pop_nth_link(GQueue *queue, guint position)
 	GList *nth = g_list_nth(queue->head, position);
 	assert(nth != NULL);
 
-	if(nth->next == NULL) {
-		queue->tail = nth->prev;
-	} else {
-		nth->next->prev = nth->prev;
-	}
-
-	if(nth->prev == NULL) {
-		queue->head = nth->next;
-	} else {
-		nth->prev->next = nth->next;
-	}
-
-	queue->length--;
-
-	nth->next = NULL;
-	nth->prev = NULL;
+	g_queue_unlink(queue, nth);
 	return nth;
 }
 
@@ -476,4 +443,26 @@ FAKEGLIB_API gint g_queue_link_index(GQueue *queue, GList *link)
 		}
 	}
 	return -1;
+}
+
+FAKEGLIB_API void g_queue_unlink(GQueue *queue, GList *link)
+{
+	assert(link != NULL);
+
+	if(link->next == NULL) {
+		queue->tail = link->prev;
+	} else {
+		link->next->prev = link->prev;
+	}
+
+	if(link->prev == NULL) {
+		queue->head = link->next;
+	} else {
+		link->prev->next = link->next;
+	}
+
+	queue->length--;
+
+	link->next = NULL;
+	link->prev = NULL;
 }
