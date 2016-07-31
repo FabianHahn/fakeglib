@@ -353,3 +353,29 @@ FAKEGLIB_API void g_queue_push_tail_link(GQueue *queue, GList *link)
 	queue->tail = link;
 	queue->length++;
 }
+
+FAKEGLIB_API void g_queue_push_nth_link(GQueue *queue, gint position, GList *link)
+{
+	assert(link->prev == NULL);
+	assert(link->next == NULL);
+
+	guint unsignedPosition = position >= 0 ? (guint) position : UINT_MAX;
+	if(unsignedPosition >= queue->length) {
+		g_queue_push_tail_link(queue, link);
+	} else {
+		GList *after = g_list_nth(queue->head, unsignedPosition);
+		assert(after != NULL);
+
+		link->prev = after->prev;
+		link->next = after;
+		after->prev = link;
+
+		if(link->prev == NULL) {
+			queue->head = link;
+		} else {
+			link->prev->next = link;
+		}
+
+		queue->length++;
+	}
+}

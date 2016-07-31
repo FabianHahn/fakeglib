@@ -47,6 +47,7 @@ FAKEGLIB_API void g_queue_insert_after(GQueue *queue, GList *sibling, gpointer d
 FAKEGLIB_API void g_queue_insert_sorted(GQueue *queue, gpointer data, GCompareDataFunc func, gpointer user_data);
 FAKEGLIB_API void g_queue_push_head_link(GQueue *queue, GList *link_);
 FAKEGLIB_API void g_queue_push_tail_link(GQueue *queue, GList *link_);
+FAKEGLIB_API void g_queue_push_nth_link(GQueue *queue, gint n, GList *link_);
 #define G_QUEUE_INIT { NULL, NULL, 0 }
 
 #ifdef __cplusplus
