@@ -4,6 +4,8 @@
 #include <vector>
 
 static std::vector<gpointer> freeCallbacks;
+static std::vector<gpointer> foreachCallbacks;
+static gpointer foreachLastUserData;
 
 class GQueueTest : public ::testing::Test {
 public:
@@ -25,6 +27,18 @@ public:
 static void test_free_callback(gpointer data)
 {
 	freeCallbacks.push_back(data);
+}
+
+static void test_foreach_clear()
+{
+	foreachCallbacks.clear();
+	foreachLastUserData = NULL;
+}
+
+static void test_foreach_callback(gpointer data, gpointer userData)
+{
+	foreachLastUserData = userData;
+	foreachCallbacks.push_back(data);
 }
 
 TEST_F(GQueueTest, freeFull)
@@ -168,4 +182,25 @@ TEST_F(GQueueTest, copy)
 	ASSERT_NE(queue->head, copiedQueue->head) << "copied queue should not be equal to original queue";
 	ASSERT_NE(queue->tail, copiedQueue->tail) << "copied queue second element should not be equal to original queue second element";
 	g_queue_free(copiedQueue);
+}
+
+TEST_F(GQueueTest, foreach)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testUserData = 27;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData2);
+	queue->head = list;
+	queue->tail = list->next->next;
+	queue->length = 3;
+
+	test_foreach_clear();
+	g_queue_foreach(queue, test_foreach_callback, &testUserData);
+	ASSERT_EQ(&testUserData, foreachLastUserData) << "passed user data should have expected value";
+	std::vector<gpointer> expectedCallbacks = {&testData1, &testData2, &testData2};
+	ASSERT_EQ(expectedCallbacks, foreachCallbacks) << "actual callback list should match expected";
 }

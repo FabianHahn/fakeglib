@@ -79,3 +79,8 @@ FAKEGLIB_API GQueue *g_queue_copy(GQueue *queue)
 	copiedQueue->length = queue->length;
 	return copiedQueue;
 }
+
+FAKEGLIB_API void g_queue_foreach(GQueue *queue, GFunc func, gpointer userData)
+{
+	g_list_foreach(queue->head, func, userData);
+}
