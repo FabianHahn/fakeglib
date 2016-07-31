@@ -36,6 +36,9 @@ FAKEGLIB_API void g_queue_push_nth(GQueue *queue, gpointer data, gint n);
 FAKEGLIB_API gpointer g_queue_pop_head(GQueue *queue);
 FAKEGLIB_API gpointer g_queue_pop_tail(GQueue *queue);
 FAKEGLIB_API gpointer g_queue_pop_nth(GQueue *queue, guint n);
+FAKEGLIB_API gpointer g_queue_peek_head(GQueue *queue);
+FAKEGLIB_API gpointer g_queue_peek_tail(GQueue *queue);
+FAKEGLIB_API gpointer g_queue_peek_nth(GQueue *queue, guint n);
 #define G_QUEUE_INIT { NULL, NULL, 0 }
 
 #ifdef __cplusplus

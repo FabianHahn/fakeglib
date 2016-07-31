@@ -479,3 +479,21 @@ TEST_F(GQueueTest, popNth)
 	ASSERT_TRUE(queue->tail->next == NULL) << "queue tail should not have a next element";
 	ASSERT_EQ(2, queue->length) << "queue should have one element left after popping one";
 }
+
+TEST_F(GQueueTest, peek)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	g_queue_push_tail(queue, &testData1);
+	g_queue_push_tail(queue, &testData2);
+
+	gpointer data = g_queue_peek_head(queue);
+	ASSERT_EQ(&testData1, data) << "peeking at the head of the queue should produce expected value";
+	data = g_queue_peek_tail(queue);
+	ASSERT_EQ(&testData2, data) << "peeking at the tail of the queue should produce expected value";
+	data = g_queue_peek_nth(queue, 0);
+	ASSERT_EQ(&testData1, data) << "peeking at the first element of the queue should produce expected value";
+	data = g_queue_peek_nth(queue, 1);
+	ASSERT_EQ(&testData2, data) << "peeking at the second element of the queue should produce expected value";
+}
