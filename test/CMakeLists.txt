@@ -1,6 +1,7 @@
 set(TEST_SRC
 	GHashTable.cpp
 	GList.cpp
+	GQueue.cpp
 	main.cpp
 )
 
