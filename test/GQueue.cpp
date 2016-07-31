@@ -377,3 +377,38 @@ TEST_F(GQueueTest, pushTail)
 	ASSERT_EQ(&testData1, queue->head->data) << "first queue element data should be set correctly";
 	ASSERT_EQ(2, queue->length) << "queue length should be two after inserting another element";
 }
+
+TEST_F(GQueueTest, pushNth)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	g_queue_push_nth(queue, &testData1, 0);
+	ASSERT_TRUE(queue->head != NULL) << "queue head should not be empty ater inserting an element";
+	ASSERT_EQ(queue->head, queue->tail) << "queue head should be equal to tail after inserting a single element";
+	ASSERT_EQ(&testData1, queue->head->data) << "first queue element data should be set correctly";
+	ASSERT_TRUE(queue->head->next == NULL) << "single queue element should not have a next element";
+	ASSERT_TRUE(queue->head->prev == NULL) << "single queue element should not have a previous element";
+	ASSERT_EQ(1, queue->length) << "queue length should be zero after inserting an element";
+	GList *oldHead = queue->head;
+	g_queue_push_nth(queue, &testData2, 1);
+	ASSERT_EQ(oldHead, queue->head) << "queue head should not have changed after inserting another element";
+	ASSERT_NE(oldHead, queue->tail) << "queue tail should have changed after pushing another element to tail";
+	ASSERT_EQ(&testData2, queue->tail->data) << "second queue element data should be set correctly";
+	ASSERT_TRUE(queue->tail->next == NULL) << "queue tail should not have a next element";
+	ASSERT_EQ(queue->head, queue->tail->prev) << "queue tail should have head as previous element";
+	ASSERT_EQ(queue->tail, queue->head->next) << "queue head should have tail as next element";
+	ASSERT_TRUE(queue->head->prev == NULL) << "queue head should not have a previous element";
+	ASSERT_EQ(&testData1, queue->head->data) << "first queue element data should be set correctly";
+	ASSERT_EQ(2, queue->length) << "queue length should be two after inserting another element";
+	GList *oldTail = queue->tail;
+	g_queue_push_nth(queue, &testData3, 1);
+	ASSERT_EQ(oldHead, queue->head) << "queue head should not have changed after inserting another element";
+	ASSERT_EQ(oldTail, queue->tail) << "queue tail should not have changed after inserting another element";
+	ASSERT_EQ(oldHead->next, oldTail->prev) << "third element should have been inserted between head and tail";
+	ASSERT_EQ(&testData3, oldTail->prev->data) << "third element data should be set correctly";
+	ASSERT_EQ(oldTail, oldTail->prev->next) << "third element next should point to tail";
+	ASSERT_EQ(oldHead, oldTail->prev->prev) << "third element previous should point to head";
+	ASSERT_EQ(3, queue->length) << "queue length should be three after inserting another element";
+}

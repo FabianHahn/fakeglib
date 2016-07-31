@@ -1,3 +1,5 @@
+#include <climits> // UINT_MAX
+
 #include "GQueue.h"
 
 FAKEGLIB_API GQueue *g_queue_new(void)
@@ -119,6 +121,25 @@ FAKEGLIB_API void g_queue_push_tail(GQueue *queue, gpointer data)
 		queue->tail = queue->head;
 	} else {
 		g_list_append(queue->tail, data);
+		queue->tail = queue->tail->next;
+	}
+
+	queue->length++;
+}
+
+FAKEGLIB_API void g_queue_push_nth(GQueue *queue, gpointer data, gint position)
+{
+	guint unsignedPosition = position >= 0 ? (guint) position : UINT_MAX;
+
+	GList *after = NULL;
+	if(unsignedPosition < queue->length) {
+		after = g_list_nth(queue->head, unsignedPosition);
+	}
+	queue->head = g_list_insert_before(queue->head, after, data);
+
+	if(queue->tail == NULL) {
+		queue->tail = queue->head;
+	} else if(after == NULL) {
 		queue->tail = queue->tail->next;
 	}
 
