@@ -79,3 +79,20 @@ TEST_F(GQueueTest, clear)
 	ASSERT_TRUE(queue->tail == NULL) << "clear should set queue tail to NULL";
 	ASSERT_EQ(0, queue->length) << "clear should set queue length to zero";
 }
+
+TEST_F(GQueueTest, isEmpty)
+{
+	int testData = 42;
+
+	gboolean empty = g_queue_is_empty(queue);
+	ASSERT_TRUE(empty) << "initial queue should be empty";
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData);
+	queue->head = list;
+	queue->tail = list;
+	queue->length = 1;
+
+	empty = g_queue_is_empty(queue);
+	ASSERT_FALSE(empty) << "queue with element should not be empty";
+}

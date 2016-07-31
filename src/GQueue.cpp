@@ -35,3 +35,8 @@ FAKEGLIB_API void g_queue_clear(GQueue *queue)
 	queue->tail = NULL;
 	queue->length = 0;
 }
+
+FAKEGLIB_API gboolean g_queue_is_empty(GQueue *queue)
+{
+	return queue->length == NULL;
+}
