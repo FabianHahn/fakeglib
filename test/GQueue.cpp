@@ -456,3 +456,26 @@ TEST_F(GQueueTest, popTail)
 	ASSERT_TRUE(queue->tail == NULL) << "queue tail should be NULL after popping another element";
 	ASSERT_EQ(0, queue->length) << "queue length should be zero after popping another element";
 }
+
+TEST_F(GQueueTest, popNth)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 27;
+
+	g_queue_push_tail(queue, &testData1);
+	g_queue_push_tail(queue, &testData2);
+	g_queue_push_tail(queue, &testData3);
+
+	gpointer data = g_queue_pop_nth(queue, 1);
+	ASSERT_EQ(&testData2, data) << "popped queue head should have correct value";
+	ASSERT_TRUE(queue->head != NULL) << "queue head should not be NULL after removing one element";
+	ASSERT_NE(queue->head, queue->tail) << "queue tail should not be equal to head after removing one element";
+	ASSERT_EQ(&testData1, queue->head->data) << "queue head data should be set correctly";
+	ASSERT_EQ(queue->tail, queue->head->next) << "queue head element next should be tail";
+	ASSERT_TRUE(queue->head->prev == NULL) << "queue head should not have a previous element";
+	ASSERT_EQ(&testData3, queue->tail->data) << "queue tail data should be set correctly";
+	ASSERT_EQ(queue->head, queue->tail->prev) << "queue tail element previous should be head";
+	ASSERT_TRUE(queue->tail->next == NULL) << "queue tail should not have a next element";
+	ASSERT_EQ(2, queue->length) << "queue should have one element left after popping one";
+}

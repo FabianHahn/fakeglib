@@ -185,3 +185,23 @@ FAKEGLIB_API gpointer g_queue_pop_tail(GQueue *queue)
 
 	return data;
 }
+
+FAKEGLIB_API gpointer g_queue_pop_nth(GQueue *queue, guint n)
+{
+	if(queue->length == 0 || n >= queue->length) {
+		return NULL;
+	}
+
+	GList *nth = g_list_nth(queue->head, n);
+	assert(nth != NULL);
+	gpointer data = nth->data;
+
+	if(nth == queue->tail) {
+		queue->tail = queue->tail->prev;
+	}
+
+	queue->head = g_list_delete_link(queue->head, nth);
+	queue->length--;
+
+	return data;
+}
