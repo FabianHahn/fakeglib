@@ -1,5 +1,6 @@
 #include <cassert> // assert
 #include <climits> // UINT_MAX
+#include <cstddef> // NULL
 
 #include "GQueue.h"
 
@@ -41,7 +42,7 @@ FAKEGLIB_API void g_queue_clear(GQueue *queue)
 
 FAKEGLIB_API gboolean g_queue_is_empty(GQueue *queue)
 {
-	return queue->length == NULL;
+	return queue->length == 0;
 }
 
 FAKEGLIB_API guint g_queue_get_length(GQueue *queue)
