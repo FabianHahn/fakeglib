@@ -40,3 +40,8 @@ FAKEGLIB_API gboolean g_queue_is_empty(GQueue *queue)
 {
 	return queue->length == NULL;
 }
+
+FAKEGLIB_API guint g_queue_get_length(GQueue *queue)
+{
+	return queue->length;
+}

@@ -96,3 +96,20 @@ TEST_F(GQueueTest, isEmpty)
 	empty = g_queue_is_empty(queue);
 	ASSERT_FALSE(empty) << "queue with element should not be empty";
 }
+
+TEST_F(GQueueTest, getLength)
+{
+	int testData = 42;
+
+	guint length = g_queue_get_length(queue);
+	ASSERT_EQ(0, length) << "initial queue should have length zero";
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData);
+	queue->head = list;
+	queue->tail = list;
+	queue->length = 1;
+
+	length = g_queue_get_length(queue);
+	ASSERT_EQ(1, length) << "queue with element should have length one";
+}
