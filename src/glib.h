@@ -4,5 +4,6 @@
 #include "GHashTable.h"
 #include "GList.h"
 #include "GMemory.h"
+#include "GQueue.h"
 
 #endif

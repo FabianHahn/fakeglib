@@ -4,6 +4,7 @@ set(FAKEGLIB_SRC
 	GHashTable.cpp
 	GList.cpp
 	GMemory.cpp
+	GQueue.cpp
 )
 
 add_library(fakeglib SHARED ${FAKEGLIB_SRC})
