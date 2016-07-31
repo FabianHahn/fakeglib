@@ -317,3 +317,39 @@ FAKEGLIB_API void g_queue_insert_sorted(GQueue *queue, gpointer data, GCompareDa
 
 	queue->length++;
 }
+
+FAKEGLIB_API void g_queue_push_head_link(GQueue *queue, GList *link)
+{
+	assert(link->prev == NULL);
+	assert(link->next == NULL);
+
+	link->next = queue->head;
+
+	if(queue->length == 0) {
+		queue->tail = link;
+	} else {
+		assert(queue->head != NULL);
+		queue->head->prev = link;
+	}
+
+	queue->head = link;
+	queue->length++;
+}
+
+FAKEGLIB_API void g_queue_push_tail_link(GQueue *queue, GList *link)
+{
+	assert(link->prev == NULL);
+	assert(link->next == NULL);
+
+	link->prev = queue->tail;
+	
+	if(queue->length == 0) {
+		queue->head = link;
+	} else {
+		assert(queue->tail != NULL);
+		queue->tail->next = link;
+	}
+
+	queue->tail = link;
+	queue->length++;
+}
