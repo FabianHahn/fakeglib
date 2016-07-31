@@ -40,6 +40,7 @@ FAKEGLIB_API gpointer g_queue_peek_head(GQueue *queue);
 FAKEGLIB_API gpointer g_queue_peek_tail(GQueue *queue);
 FAKEGLIB_API gpointer g_queue_peek_nth(GQueue *queue, guint n);
 FAKEGLIB_API gint g_queue_index(GQueue *queue, gconstpointer data);
+FAKEGLIB_API gboolean g_queue_remove(GQueue *queue, gconstpointer data);
 #define G_QUEUE_INIT { NULL, NULL, 0 }
 
 #ifdef __cplusplus

@@ -518,3 +518,35 @@ TEST_F(GQueueTest, index)
 	index = g_queue_index(queue, &testData3);
 	ASSERT_EQ(-1, index) << "index of unknown element should be minus one";
 }
+
+TEST_F(GQueueTest, remove)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int testData3 = 26;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	queue->head = list;
+	queue->tail = g_list_last(list);
+	queue->length = 2;
+
+	gboolean removed = g_queue_remove(queue, &testData3);
+	ASSERT_FALSE(removed) << "removal of unknown element should not succeed";
+	ASSERT_EQ(2, queue->length) << "queue length should still be two after failing to remove";
+	ASSERT_NE(queue->head, queue->tail) << "queue tail should not be equal to head after failing to remove";
+	removed = g_queue_remove(queue, &testData2);
+	ASSERT_TRUE(removed) << "removal of second element should succeed";
+	ASSERT_TRUE(queue->head != NULL) << "queue head should not be NULL after removing second element";
+	ASSERT_EQ(queue->head, queue->tail) << "queue head should be equal to tail after removing second element";
+	ASSERT_EQ(&testData1, queue->head->data) << "first queue element data should be set";
+	ASSERT_TRUE(queue->head->prev == NULL) << "first queue element should not have a previous element";
+	ASSERT_TRUE(queue->head->next == NULL) << "first queue element should not have a next element";
+	ASSERT_EQ(1, queue->length) << "queue length should be one after removing an element";
+	removed = g_queue_remove(queue, &testData1);
+	ASSERT_TRUE(removed) << "removal of first element should succeed";
+	ASSERT_TRUE(queue->head == NULL) << "queue head should be NULL after removing first element";
+	ASSERT_TRUE(queue->tail == NULL) << "queue tail should be NULL after removing first element";
+	ASSERT_EQ(0, queue->length) << "queue length should be zero after removing another element";
+}

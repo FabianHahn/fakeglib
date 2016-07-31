@@ -241,3 +241,20 @@ FAKEGLIB_API gint g_queue_index(GQueue *queue, gconstpointer data)
 {
 	return g_list_index(queue->head, data);
 }
+
+FAKEGLIB_API gboolean g_queue_remove(GQueue *queue, gconstpointer data)
+{
+	for(GList *iter = queue->head; iter != NULL; iter = iter->next) {
+		if(iter->data == data) {
+			if(iter == queue->tail) {
+				queue->tail = queue->tail->prev;
+			}
+
+			queue->head = g_list_delete_link(queue->head, iter);
+			queue->length--;
+			return true;
+		}
+	}
+
+	return false;
+}
