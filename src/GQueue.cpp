@@ -100,3 +100,27 @@ FAKEGLIB_API void g_queue_sort(GQueue *queue, GCompareDataFunc compareFunc, gpoi
 	queue->head = g_list_sort_with_data(queue->head, compareFunc, userData);
 	queue->tail = g_list_last(queue->head);
 }
+
+FAKEGLIB_API void g_queue_push_head(GQueue *queue, gpointer data)
+{
+	queue->head = g_list_prepend(queue->head, data);
+
+	if(queue->tail == NULL) {
+		queue->tail = queue->head;
+	}
+
+	queue->length++;
+}
+
+FAKEGLIB_API void g_queue_push_tail(GQueue *queue, gpointer data)
+{
+	if(queue->tail == NULL) {
+		queue->head = g_list_prepend(queue->head, data);
+		queue->tail = queue->head;
+	} else {
+		g_list_append(queue->tail, data);
+		queue->tail = queue->tail->next;
+	}
+
+	queue->length++;
+}

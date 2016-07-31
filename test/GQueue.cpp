@@ -327,3 +327,53 @@ TEST_F(GQueueTest, sort)
 		ASSERT_EQ(previous, iter->prev) << "resorted list element " << i << " previous pointer should be correct";
 	}
 }
+
+TEST_F(GQueueTest, pushHead)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	g_queue_push_head(queue, &testData1);
+	ASSERT_TRUE(queue->head != NULL) << "queue head should not be NULL after inserting an element";
+	ASSERT_EQ(queue->head, queue->tail) << "queue head should be equal to tail after inserting a single element";
+	ASSERT_EQ(&testData1, queue->head->data) << "first queue element data should be set correctly";
+	ASSERT_TRUE(queue->head->next == NULL) << "queue element should not have a next element";
+	ASSERT_TRUE(queue->head->prev == NULL) << "queue element should not have a previous element";
+	ASSERT_EQ(1, queue->length) << "queue length should be one after inserting an element";
+	GList *oldHead = queue->head;
+	g_queue_push_head(queue, &testData2);
+	ASSERT_NE(oldHead, queue->head) << "queue head should have changed after inserting another element";
+	ASSERT_EQ(oldHead, queue->tail) << "queue tail should have become tail after pushing another element to head";
+	ASSERT_EQ(&testData1, queue->tail->data) << "first queue element data should be set correctly";
+	ASSERT_TRUE(queue->tail->next == NULL) << "queue tail should not have a next element";
+	ASSERT_EQ(queue->head, queue->tail->prev) << "queue tail should have head as previous element";
+	ASSERT_EQ(queue->tail, queue->head->next) << "queue head should have tail as next element";
+	ASSERT_TRUE(queue->head->prev == NULL) << "queue head should not have a previous element";
+	ASSERT_EQ(&testData2, queue->head->data) << "second queue element data should be set correctly";
+	ASSERT_EQ(2, queue->length) << "queue length should be two after inserting another element";
+}
+
+TEST_F(GQueueTest, pushTail)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	g_queue_push_tail(queue, &testData1);
+	ASSERT_TRUE(queue->head != NULL) << "queue head should not be NULL after inserting an element";
+	ASSERT_EQ(queue->head, queue->tail) << "queue head should be equal to tail after inserting a single element";
+	ASSERT_EQ(&testData1, queue->head->data) << "first queue element data should be set correctly";
+	ASSERT_TRUE(queue->head->next == NULL) << "queue element should not have a next element";
+	ASSERT_TRUE(queue->head->prev == NULL) << "queue element should not have a previous element";
+	ASSERT_EQ(1, queue->length) << "queue length should be one after inserting an element";
+	GList *oldHead = queue->head;
+	g_queue_push_tail(queue, &testData2);
+	ASSERT_EQ(oldHead, queue->head) << "queue head should not have changed after inserting another element";
+	ASSERT_NE(oldHead, queue->tail) << "queue tail should have changed after pushing another element to tail";
+	ASSERT_EQ(&testData2, queue->tail->data) << "second queue element data should be set correctly";
+	ASSERT_TRUE(queue->tail->next == NULL) << "queue tail should not have a next element";
+	ASSERT_EQ(queue->head, queue->tail->prev) << "queue tail should have head as previous element";
+	ASSERT_EQ(queue->tail, queue->head->next) << "queue head should have tail as next element";
+	ASSERT_TRUE(queue->head->prev == NULL) << "queue head should not have a previous element";
+	ASSERT_EQ(&testData1, queue->head->data) << "first queue element data should be set correctly";
+	ASSERT_EQ(2, queue->length) << "queue length should be two after inserting another element";
+}
