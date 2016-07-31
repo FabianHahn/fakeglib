@@ -24,6 +24,30 @@ public:
 	GQueue *queue;
 };
 
+static gint test_compare_int(gconstpointer v1, gconstpointer v2)
+{
+	if(v1 == NULL && v2 == NULL) {
+		return 0;
+	}
+	if(v1 == NULL) {
+		return -1;
+	}
+	if(v2 == NULL) {
+		return 1;
+	}
+
+	const int& firstInt = *reinterpret_cast<const int *>(v1);
+	const int& secondInt = *reinterpret_cast<const int *>(v2);
+
+	if(firstInt > secondInt) {
+		return 1;
+	}
+	if(firstInt == secondInt) {
+		return 0;
+	}
+	return -1;
+}
+
 static void test_free_callback(gpointer data)
 {
 	freeCallbacks.push_back(data);
@@ -223,5 +247,28 @@ TEST_F(GQueueTest, find)
 	find = g_queue_find(queue, &testData2);
 	ASSERT_EQ(list->next, find) << "second element should be found";
 	find = g_queue_find(queue, &testData3);
+	ASSERT_TRUE(find == NULL) << "unknown element should not be found";
+}
+
+TEST_F(GQueueTest, findCustom)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+	int searchData1 = testData1;
+	int searchData2 = testData2;
+	int searchData3 = 27;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	queue->head = list;
+	queue->tail = list->next->next;
+	queue->length = 2;
+
+	GList *find = g_queue_find_custom(queue, &searchData1, test_compare_int);
+	ASSERT_EQ(list, find) << "first element should be found";
+	find = g_queue_find_custom(queue, &searchData2, test_compare_int);
+	ASSERT_EQ(list->next, find) << "second element should be found";
+	find = g_queue_find_custom(queue, &searchData3, test_compare_int);
 	ASSERT_TRUE(find == NULL) << "unknown element should not be found";
 }

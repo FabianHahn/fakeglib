@@ -89,3 +89,8 @@ FAKEGLIB_API GList *g_queue_find(GQueue *queue, gconstpointer data)
 {
 	return g_list_find(queue->head, data);
 }
+
+FAKEGLIB_API GList *g_queue_find_custom(GQueue *queue, gconstpointer data, GCompareFunc func)
+{
+	return g_list_find_custom(queue->head, data, func);
+}
