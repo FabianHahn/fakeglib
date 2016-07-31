@@ -883,3 +883,21 @@ TEST_F(GQueueTest, popNthLink)
 	ASSERT_TRUE(queue->tail->next == NULL) << "queue tail should not have a next element";
 	ASSERT_EQ(2, queue->length) << "queue should have one element left after popping one";
 }
+
+TEST_F(GQueueTest, peekLink)
+{
+	int testData1 = 42;
+	int testData2 = 1337;
+
+	g_queue_push_tail(queue, &testData1);
+	g_queue_push_tail(queue, &testData2);
+
+	GList *link = g_queue_peek_head_link(queue);
+	ASSERT_EQ(queue->head, link) << "peeking at the head of the queue should produce expected element";
+	link = g_queue_peek_tail_link(queue);
+	ASSERT_EQ(queue->tail, link) << "peeking at the tail of the queue should produce expected element";
+	link = g_queue_peek_nth_link(queue, 0);
+	ASSERT_EQ(queue->head, link) << "peeking at the first element of the queue should produce expected element";
+	link = g_queue_peek_nth_link(queue, 1);
+	ASSERT_EQ(queue->tail, link) << "peeking at the second element of the queue should produce expected element";
+}

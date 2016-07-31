@@ -51,6 +51,9 @@ FAKEGLIB_API void g_queue_push_nth_link(GQueue *queue, gint n, GList *link_);
 FAKEGLIB_API GList *g_queue_pop_head_link(GQueue *queue);
 FAKEGLIB_API GList *g_queue_pop_tail_link(GQueue *queue);
 FAKEGLIB_API GList *g_queue_pop_nth_link(GQueue *queue, guint n);
+FAKEGLIB_API GList *g_queue_peek_head_link(GQueue *queue);
+FAKEGLIB_API GList *g_queue_peek_tail_link(GQueue *queue);
+FAKEGLIB_API GList *g_queue_peek_nth_link(GQueue *queue, guint n);
 #define G_QUEUE_INIT { NULL, NULL, 0 }
 
 #ifdef __cplusplus

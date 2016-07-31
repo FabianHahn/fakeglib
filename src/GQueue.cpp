@@ -451,3 +451,18 @@ FAKEGLIB_API GList *g_queue_pop_nth_link(GQueue *queue, guint position)
 	nth->prev = NULL;
 	return nth;
 }
+
+FAKEGLIB_API GList *g_queue_peek_head_link(GQueue *queue)
+{
+	return queue->head;
+}
+
+FAKEGLIB_API GList *g_queue_peek_tail_link(GQueue *queue)
+{
+	return queue->tail;
+}
+
+FAKEGLIB_API GList *g_queue_peek_nth_link(GQueue *queue, guint n)
+{
+	return g_list_nth(queue->head, n);
+}
