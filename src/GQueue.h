@@ -44,6 +44,7 @@ FAKEGLIB_API gboolean g_queue_remove(GQueue *queue, gconstpointer data);
 FAKEGLIB_API guint g_queue_remove_all(GQueue *queue, gconstpointer data);
 FAKEGLIB_API void g_queue_insert_before(GQueue *queue, GList *sibling, gpointer data);
 FAKEGLIB_API void g_queue_insert_after(GQueue *queue, GList *sibling, gpointer data);
+FAKEGLIB_API void g_queue_insert_sorted(GQueue *queue, gpointer data, GCompareDataFunc func, gpointer user_data);
 #define G_QUEUE_INIT { NULL, NULL, 0 }
 
 #ifdef __cplusplus

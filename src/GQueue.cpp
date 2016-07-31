@@ -302,3 +302,18 @@ FAKEGLIB_API void g_queue_insert_after(GQueue *queue, GList *sibling, gpointer d
 		g_queue_insert_before(queue, sibling->next, data);
 	}
 }
+
+FAKEGLIB_API void g_queue_insert_sorted(GQueue *queue, gpointer data, GCompareDataFunc func, gpointer userData)
+{
+	assert(queue->tail == NULL || queue->tail->next == NULL);
+
+	queue->head = g_list_insert_sorted_with_data(queue->head, data, func, userData);
+
+	if(queue->tail == NULL) {
+		queue->tail = queue->head;
+	} else if(queue->tail->next != NULL) {
+		queue->tail = queue->tail->next;
+	}
+
+	queue->length++;
+}

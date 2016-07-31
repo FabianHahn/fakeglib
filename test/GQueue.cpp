@@ -639,3 +639,60 @@ TEST_F(GQueueTest, insertAfter)
 	ASSERT_TRUE(queue->tail->next == NULL) << "queue tail should not have a next element";
 	ASSERT_EQ(2, queue->length) << "queue length should be two after inserting another element";
 }
+
+TEST_F(GQueueTest, insertSorted)
+{
+	int testData1 = 2;
+	int testData2 = 0;
+	int testData3 = 1;
+	int testData4 = 3;
+	int testUserData = 1337;
+
+	compareLastUserData = NULL;
+	g_queue_insert_sorted(queue, &testData1, test_compare_int_with_data, &testUserData);
+	GList *first = queue->head;
+	ASSERT_TRUE(compareLastUserData == NULL) << "user data should not have been passed when sorted inserting into empty queue";
+	ASSERT_TRUE(first != NULL) << "queue head should not be NULL after inserting an element";
+	ASSERT_EQ(first, queue->tail) << "queue tail should be equal to first element after inserting it";
+	ASSERT_EQ(&testData1, first->data) << "first list element data should be set";
+	ASSERT_TRUE(first->prev == NULL) << "first list element should not have a previous element";
+	ASSERT_TRUE(first->next == NULL) << "first list element should not have a next element";
+	ASSERT_EQ(1, queue->length) << "queue length should be one after inserting first element";
+
+	compareLastUserData = NULL;
+	g_queue_insert_sorted(queue, &testData2, test_compare_int_with_data, &testUserData);
+	GList *second = queue->head;
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	ASSERT_TRUE(second != NULL) << "queue head should not be NULL after inserting second element";
+	ASSERT_NE(second, queue->tail) << "queue tail should not be equal to head after inserting second element";
+	ASSERT_EQ(first, queue->tail) << "queue tail should be equal to first element after inserting second element";
+	ASSERT_EQ(&testData2, second->data) << "second queue element data should be set";
+	ASSERT_TRUE(second->prev == NULL) << "second queue element should not have a previous element";
+	ASSERT_EQ(first, second->next) << "second queue element should have first as next element";
+	ASSERT_EQ(second, first->prev) << "first queue element should have second as previous element";
+	ASSERT_EQ(2, queue->length) << "queue length should be two after inserting second element";
+
+	compareLastUserData = NULL;
+	g_queue_insert_sorted(queue, &testData3, test_compare_int_with_data, &testUserData);
+	GList *third = queue->head->next;
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	ASSERT_EQ(second, queue->head) << "queue head element should still be equal to second element after inserting third element";
+	ASSERT_EQ(first, queue->tail) << "queue tail should be equal to first element after inserting second element";
+	ASSERT_EQ(&testData3, third->data) << "third list element data should be set";
+	ASSERT_EQ(first, third->next) << "third list element should have first as next element";
+	ASSERT_EQ(second, third->prev) << "third list element should have second as previous element";
+	ASSERT_EQ(third, second->next) << "second list element should have third as next element";
+	ASSERT_EQ(third, first->prev) << "first list element should have third as previous element";
+	ASSERT_EQ(3, queue->length) << "queue length should be three after inserting third element";
+
+	compareLastUserData = NULL;
+	g_queue_insert_sorted(queue, &testData4, test_compare_int_with_data, &testUserData);
+	GList *fourth = queue->tail;
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	ASSERT_EQ(second, queue->head) << "queue head element should still be second after inserting fourth element";
+	ASSERT_EQ(&testData4, fourth->data) << "fourth queue element data should be set";
+	ASSERT_TRUE(fourth->next == NULL) << "fourth queue element should not have a next element";
+	ASSERT_EQ(first, fourth->prev) << "fourth queue element should have first as previous element";
+	ASSERT_EQ(fourth, first->next) << "first queue element should have fourth as next element";
+	ASSERT_EQ(4, queue->length) << "queue length should be four after inserting fourth element";
+}
