@@ -6,6 +6,7 @@
 static std::vector<gpointer> freeCallbacks;
 static std::vector<gpointer> foreachCallbacks;
 static gpointer foreachLastUserData;
+static gpointer compareLastUserData;
 
 class GQueueTest : public ::testing::Test {
 public:
@@ -24,8 +25,10 @@ public:
 	GQueue *queue;
 };
 
-static gint test_compare_int(gconstpointer v1, gconstpointer v2)
+static gint test_compare_int_with_data(gconstpointer v1, gconstpointer v2, gpointer userData)
 {
+	compareLastUserData = userData;
+
 	if(v1 == NULL && v2 == NULL) {
 		return 0;
 	}
@@ -46,6 +49,11 @@ static gint test_compare_int(gconstpointer v1, gconstpointer v2)
 		return 0;
 	}
 	return -1;
+}
+
+static gint test_compare_int(gconstpointer v1, gconstpointer v2)
+{
+	return test_compare_int_with_data(v1, v2, NULL);
 }
 
 static void test_free_callback(gpointer data)
@@ -271,4 +279,51 @@ TEST_F(GQueueTest, findCustom)
 	ASSERT_EQ(list->next, find) << "second element should be found";
 	find = g_queue_find_custom(queue, &searchData3, test_compare_int);
 	ASSERT_TRUE(find == NULL) << "unknown element should not be found";
+}
+
+TEST_F(GQueueTest, sort)
+{
+	int testData1 = 42;
+	int testData2 = 1;
+	int testData3 = 27;
+	int testData4 = 27;
+	int testData5 = 5;
+	int testData6 = 3;
+	int testData7 = 2;
+	int testUserData = 1337;
+
+	GList *list = NULL;
+	list = g_list_append(list, &testData1);
+	list = g_list_append(list, &testData2);
+	list = g_list_append(list, &testData3);
+	list = g_list_append(list, &testData4);
+	list = g_list_append(list, &testData5);
+	list = g_list_append(list, &testData6);
+	list = g_list_append(list, &testData7);
+	queue->head = list;
+	queue->tail = g_list_last(list);
+	queue->length = 7;
+
+	compareLastUserData = NULL;
+	g_queue_sort(queue, test_compare_int_with_data, &testUserData);
+	ASSERT_EQ(7, queue->length) << "sorting queue should not change its length";
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	std::vector<gpointer> expectedSolution = {&testData2, &testData7, &testData6, &testData5, &testData3, &testData4, &testData1};
+	GList *previous = NULL;
+	int i = 0;
+	for(GList *iter = queue->head; iter != NULL; previous = iter, iter = iter->next, i++) {
+		ASSERT_EQ(expectedSolution[i], iter->data) << "sorted list element " << i << " should have expected value";
+		ASSERT_EQ(previous, iter->prev) << "sorted list element " << i << " previous pointer should be correct";
+	}
+
+	compareLastUserData = NULL;
+	g_queue_sort(queue, test_compare_int_with_data, &testUserData);
+	ASSERT_EQ(7, queue->length) << "sorting queue should not change its length";
+	ASSERT_EQ(&testUserData, compareLastUserData) << "passed user data should have expected value";
+	previous = NULL;
+	i = 0;
+	for(GList *iter = queue->head; iter != NULL; previous = iter, iter = iter->next, i++) {
+		ASSERT_EQ(expectedSolution[i], iter->data) << "resorted list element " << i << " should have expected value";
+		ASSERT_EQ(previous, iter->prev) << "resorted list element " << i << " previous pointer should be correct";
+	}
 }

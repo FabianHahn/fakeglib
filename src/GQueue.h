@@ -29,6 +29,7 @@ FAKEGLIB_API GQueue *g_queue_copy(GQueue *queue);
 FAKEGLIB_API void g_queue_foreach(GQueue *queue, GFunc func, gpointer user_data);
 FAKEGLIB_API GList *g_queue_find(GQueue *queue,	gconstpointer data);
 FAKEGLIB_API GList *g_queue_find_custom(GQueue *queue, gconstpointer data, GCompareFunc func);
+FAKEGLIB_API void g_queue_sort(GQueue *queue, GCompareDataFunc compare_func, gpointer user_data);
 #define G_QUEUE_INIT { NULL, NULL, 0 }
 
 #ifdef __cplusplus

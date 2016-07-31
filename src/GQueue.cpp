@@ -94,3 +94,9 @@ FAKEGLIB_API GList *g_queue_find_custom(GQueue *queue, gconstpointer data, GComp
 {
 	return g_list_find_custom(queue->head, data, func);
 }
+
+FAKEGLIB_API void g_queue_sort(GQueue *queue, GCompareDataFunc compareFunc, gpointer userData)
+{
+	queue->head = g_list_sort_with_data(queue->head, compareFunc, userData);
+	queue->tail = g_list_last(queue->head);
+}
