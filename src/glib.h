@@ -5,5 +5,6 @@
 #include "GList.h"
 #include "GMemory.h"
 #include "GQueue.h"
+#include "GString.h"
 
 #endif

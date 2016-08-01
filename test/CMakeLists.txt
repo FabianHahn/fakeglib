@@ -2,6 +2,7 @@ set(TEST_SRC
 	GHashTable.cpp
 	GList.cpp
 	GQueue.cpp
+	GString.cpp
 	main.cpp
 )
 

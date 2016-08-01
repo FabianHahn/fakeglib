@@ -5,6 +5,7 @@ set(FAKEGLIB_SRC
 	GList.cpp
 	GMemory.cpp
 	GQueue.cpp
+	GString.cpp
 )
 
 add_library(fakeglib SHARED ${FAKEGLIB_SRC})
