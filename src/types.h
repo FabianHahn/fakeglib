@@ -5,8 +5,12 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+#include <stddef.h> // size_t
+#include <stdint.h> // int64
 
+typedef char gchar;
+typedef unsigned long gsize;
+typedef signed long gssize;
 typedef int gint;
 typedef unsigned int guint;
 typedef int64_t gint64;
