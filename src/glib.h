@@ -6,5 +6,6 @@
 #include "GMemory.h"
 #include "GQueue.h"
 #include "GString.h"
+#include "GTypes.h"
 
 #endif

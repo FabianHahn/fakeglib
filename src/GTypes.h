@@ -1,5 +1,5 @@
-#ifndef FAKEGLIB_TYPES_H
-#define FAKEGLIB_TYPES_H
+#ifndef FAKEGLIB_G_TYPES_H
+#define FAKEGLIB_G_TYPES_H
 
 #ifdef __cplusplus
 extern "C" {

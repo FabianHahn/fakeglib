@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include "api.h"
-#include "types.h"
+#include "GTypes.h"
 
 FAKEGLIB_API void g_free(gpointer mem);
 

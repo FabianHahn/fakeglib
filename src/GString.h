@@ -8,7 +8,7 @@ extern "C" {
 #include <stdarg.h> // va_list
 
 #include "api.h"
-#include "types.h"
+#include "GTypes.h"
 
 struct GStringStruct {
 	gchar *str;

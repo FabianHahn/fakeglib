@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include "api.h"
-#include "types.h"
+#include "GTypes.h"
 #include "GList.h"
 
 typedef guint (*GHashFunc)(gconstpointer key);

@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include "api.h"
-#include "types.h"
+#include "GTypes.h"
 
 typedef gint (*GCompareFunc)(gconstpointer a, gconstpointer b);
 typedef gint (*GCompareDataFunc)(gconstpointer a, gconstpointer b, gpointer user_data);
