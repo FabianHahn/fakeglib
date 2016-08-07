@@ -1,4 +1,5 @@
 set(TEST_SRC
+	GDateTimeTest.cpp
 	GHashTableTest.cpp
 	GListTest.cpp
 	GQueueTest.cpp

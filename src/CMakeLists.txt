@@ -1,6 +1,7 @@
 include(GenerateExportHeader)
 
 set(FAKEGLIB_SRC
+	GDateTime.cpp
 	GHashTable.cpp
 	GList.cpp
 	GMemory.cpp
