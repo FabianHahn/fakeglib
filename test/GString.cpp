@@ -67,6 +67,17 @@ TEST_F(GStringTest, newLen)
 	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
 }
 
+TEST_F(GStringTest, sizedNew)
+{
+	gsize testSize = 27;
+
+	g_string_free(string, true);
+	string = g_string_sized_new(testSize);
+	ASSERT_STREQ("", string->str) << "initialized string should be empty";
+	ASSERT_EQ(0, string->len) << "initialized string should have length zero";
+	ASSERT_GE(string->allocated_len, testSize) << "allocated length must be at least specified size";
+}
+
 TEST_F(GStringTest, vprintf)
 {
 	const char *testData = "asdf";

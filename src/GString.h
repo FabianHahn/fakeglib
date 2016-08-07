@@ -19,6 +19,7 @@ typedef struct GStringStruct GString;
 
 FAKEGLIB_API GString *g_string_new(const gchar *init);
 FAKEGLIB_API GString *g_string_new_len(const gchar *init, gssize len);
+FAKEGLIB_API GString *g_string_sized_new(gsize dfl_size);
 FAKEGLIB_API void g_string_vprintf(GString *string, const gchar *format, va_list args);
 FAKEGLIB_API gchar *g_string_free(GString *string, gboolean free_segment);
 

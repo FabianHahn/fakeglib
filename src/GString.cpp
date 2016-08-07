@@ -32,6 +32,19 @@ FAKEGLIB_API GString *g_string_new_len(const gchar *init, gssize len)
 	return string;
 }
 
+FAKEGLIB_API GString *g_string_sized_new(gsize len)
+{
+	assert(len >= 0);
+	assert(len <= LONG_MAX);
+
+	GString *string = new GString{};
+	string->str = (gchar *) malloc((len + 1) * sizeof(gchar));
+	string->str[0] = '\0';
+	string->len = 0;
+	string->allocated_len = len;
+	return string;
+}
+
 FAKEGLIB_API void g_string_vprintf(GString *string, const gchar *format, va_list args)
 {
 	va_list copiedArgs;
