@@ -8,12 +8,21 @@
 
 #include "GString.h"
 
+static void expandStringTo(GString *string, gsize len)
+{
+	if(len >= string->allocated_len) {
+		gsize newAllocatedLen = 2 * len; // overallocate to amortize cost of repeated calls
+		string->str = (gchar *) realloc(string->str, newAllocatedLen * sizeof(gchar));
+		string->allocated_len = newAllocatedLen;
+	}
+}
+
 FAKEGLIB_API GString *g_string_new(const gchar *init)
 {
 	GString *string = new GString{};
 	string->str = strdup(init == NULL ? "" : init);
 	string->len = (gsize) strlen(string->str);
-	string->allocated_len = string->len;
+	string->allocated_len = string->len + 1;
 	return string;
 }
 
@@ -23,12 +32,11 @@ FAKEGLIB_API GString *g_string_new_len(const gchar *init, gssize len)
 	assert(len <= LONG_MAX);
 
 	GString *string = new GString{};
-	string->str = (gchar *) malloc((len + 1) * sizeof(gchar));
-	memcpy(string->str, init, len);
-	string->str[len] = '\0';
-
 	string->len = (gsize) len;
-	string->allocated_len = string->len;
+	string->allocated_len = string->len + 1;
+	string->str = (gchar *) malloc(string->allocated_len * sizeof(gchar));
+	memcpy(string->str, init, len);
+	string->str[string->len] = '\0';
 	return string;
 }
 
@@ -38,10 +46,10 @@ FAKEGLIB_API GString *g_string_sized_new(gsize len)
 	assert(len <= LONG_MAX);
 
 	GString *string = new GString{};
-	string->str = (gchar *) malloc((len + 1) * sizeof(gchar));
+	string->allocated_len = len + 1;
+	string->str = (gchar *) malloc(string->allocated_len * sizeof(gchar));
 	string->str[0] = '\0';
 	string->len = 0;
-	string->allocated_len = len;
 	return string;
 }
 
@@ -50,13 +58,11 @@ FAKEGLIB_API GString *g_string_assign(GString *string, const gchar *rval)
 	size_t length = strlen(rval);
 	assert(length <= LONG_MAX);
 
-	if((gsize) length <= string->allocated_len) {
+	if((gsize) length < string->allocated_len) {
 		memmove(string->str, rval, length);
 	} else {
-		free(string->str);
-		string->str = (gchar *) malloc((length + 1) * sizeof(gchar));
+		expandStringTo(string, (gsize) length);
 		memcpy(string->str, rval, length);
-		string->allocated_len = (gsize) length;
 	}
 	string->len = (gsize) length;
 	string->str[string->len] = '\0';
@@ -67,21 +73,19 @@ FAKEGLIB_API void g_string_vprintf(GString *string, const gchar *format, va_list
 {
 	va_list copiedArgs;
 	va_copy(copiedArgs, args);
-	int ret = vsnprintf(string->str, string->allocated_len + 1, format, copiedArgs);
+	int ret = vsnprintf(string->str, string->allocated_len, format, copiedArgs);
 	va_end(copiedArgs);
-	if(ret < (int) string->allocated_len + 1) {
+	if(ret < (int) string->allocated_len) {
 		assert(ret >= 0);
 		string->len = ret;
 		return;
 	}
 
-	free(string->str);
-	string->str = (gchar *) malloc((ret + 1) * sizeof(gchar));
+	expandStringTo(string, (gsize) ret);
 	string->len = ret;
-	string->allocated_len = ret;
 
-	ret = vsnprintf(string->str, string->allocated_len + 1, format, args);
-	assert(ret == string->allocated_len);
+	ret = vsnprintf(string->str, string->allocated_len, format, args);
+	assert((gsize) ret < string->allocated_len);
 }
 
 FAKEGLIB_API void g_string_append_vprintf(GString *string, const gchar *format, va_list args)
@@ -90,26 +94,20 @@ FAKEGLIB_API void g_string_append_vprintf(GString *string, const gchar *format, 
 	gchar *offsetStr = string->str + string->len;
 	va_list copiedArgs;
 	va_copy(copiedArgs, args);
-	int ret = vsnprintf(offsetStr, remainingAllocatedLen + 1, format, copiedArgs);
+	int ret = vsnprintf(offsetStr, remainingAllocatedLen, format, copiedArgs);
 	va_end(copiedArgs);
-	if(ret < (int) remainingAllocatedLen + 1) {
+	if(ret < (int) remainingAllocatedLen) {
 		assert(ret >= 0);
 		string->len += ret;
 		return;
 	}
 
 	// not enough space, back off and reallocate
-	GString *newString = g_string_sized_new(string->len + ret);
-	memcpy(newString->str, string->str, string->len);
-	offsetStr = newString->str + string->len;
+	expandStringTo(string, string->len + ret);
+	offsetStr = string->str + string->len;
 	int newRet = vsnprintf(offsetStr, ret + 1, format, args);
 	assert(newRet == ret);
-
-	free(string->str);
-	string->str = newString->str;
 	string->len += ret;
-	string->allocated_len = string->len;
-	g_string_free(newString, false);
 }
 
 FAKEGLIB_API void g_string_printf(GString *string, const gchar *format, ...)
@@ -134,17 +132,12 @@ FAKEGLIB_API GString *g_string_append(GString *string, const gchar *val)
 	assert(length <= LONG_MAX);
 	gsize remainingAllocatedLen = string->allocated_len - string->len;
 
-	if((gsize) length <= remainingAllocatedLen) {
+	if((gsize) length < remainingAllocatedLen) {
 		gchar *offsetStr = string->str + string->len;
 		memmove(offsetStr, val, length);
 	} else {
-		gchar *newStr = (gchar *) malloc((string->len + length + 1) * sizeof(gchar));
-		memcpy(newStr, string->str, string->len);
-		memcpy(newStr + string->len, val, length);
-
-		free(string->str);
-		string->str = newStr;
-		string->allocated_len = string->len;
+		expandStringTo(string, string->len + (gsize) length);
+		memcpy(string->str + string->len, val, length);
 	}
 	string->len = string->len + (gsize) length;
 	string->str[string->len] = '\0';

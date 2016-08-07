@@ -50,7 +50,7 @@ TEST_F(GStringTest, newFree)
 
 	ASSERT_STREQ("", string->str) << "initial string should be equal to empty string";
 	ASSERT_EQ(0, string->len) << "initial string length should be zero";
-	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	gchar *segment = g_string_free(string, false);
 	ASSERT_STREQ("", segment) << "preserved segment from freed initial string should be equal to empty string";
@@ -60,7 +60,7 @@ TEST_F(GStringTest, newFree)
 	ASSERT_NE(testData, string->str) << "initializing a string should copy input";
 	ASSERT_STREQ(testData, string->str) << "initialized string should be equal to what it was initialized with";
 	ASSERT_EQ(strlen(testData), string->len) << "initialized string should have correct length";
-	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 }
 
 TEST_F(GStringTest, newLen)
@@ -72,7 +72,7 @@ TEST_F(GStringTest, newLen)
 	ASSERT_NE(testData, string->str) << "initializing a string should copy input";
 	ASSERT_STREQ("asdf", string->str) << "initialized string should be equal to what it was initialized with";
 	ASSERT_EQ(4, string->len) << "initialized string should have correct length";
-	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 }
 
 TEST_F(GStringTest, sizedNew)
@@ -83,7 +83,7 @@ TEST_F(GStringTest, sizedNew)
 	string = g_string_sized_new(testSize);
 	ASSERT_STREQ("", string->str) << "initialized string should be empty";
 	ASSERT_EQ(0, string->len) << "initialized string should have length zero";
-	ASSERT_GE(string->allocated_len, testSize) << "allocated length must be at least specified size";
+	ASSERT_GT(string->allocated_len, testSize) << "allocated length must be larger than specified size";
 }
 
 TEST_F(GStringTest, assign)
@@ -105,14 +105,14 @@ TEST_F(GStringTest, assign)
 	ASSERT_EQ(string, sameString) << "assign should return original string pointer";
 	ASSERT_STREQ(longString, string->str) << "assigned string should match input";
 	ASSERT_EQ(2 * oldAllocatedLen, string->len) << "assigned string should have correct length";
-	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	oldAllocatedLen = string->allocated_len;
 	sameString = g_string_assign(string, testData);
 	ASSERT_EQ(string, sameString) << "assign should return original string pointer";
 	ASSERT_STREQ(testData, string->str) << "assigned string should match input";
 	ASSERT_EQ(strlen(testData), string->len) << "assigned string should have correct length";
-	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	free(longString);
 }
@@ -129,7 +129,7 @@ TEST_F(GStringTest, vprintf)
 	call_g_string_vprintf(string, "%s", longString);
 	ASSERT_STREQ(longString, string->str) << "printed string should match input";
 	ASSERT_EQ(2 * oldAllocatedLen, string->len) << "new length should be double the old allocated size";
-	ASSERT_LE(2 * oldAllocatedLen, string->allocated_len) << "allocated length should have at least doubled";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	oldAllocatedLen = string->allocated_len;
 	call_g_string_vprintf(string, "%s", testData);
@@ -158,7 +158,7 @@ TEST_F(GStringTest, appendVprintf)
 	call_g_string_append_vprintf(string, "%s", longString);
 	ASSERT_STREQ(solutionString->str, string->str) << "appended string should match solution";
 	ASSERT_EQ(strlen(testData) + oldAllocatedLen, string->len) << "new length match expected length";
-	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	free(longString);
 	g_string_free(solutionString, true);
@@ -176,13 +176,13 @@ TEST_F(GStringTest, printf)
 	g_string_printf(string, "%s", longString);
 	ASSERT_STREQ(longString, string->str) << "printed string should match input";
 	ASSERT_EQ(2 * oldAllocatedLen, string->len) << "new length should be double the old allocated size";
-	ASSERT_LE(2 * oldAllocatedLen, string->allocated_len) << "allocated length should have at least doubled";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	oldAllocatedLen = string->allocated_len;
 	g_string_printf(string, "%s", testData);
 	ASSERT_STREQ(testData, string->str) << "printed string should match input";
 	ASSERT_EQ(strlen(testData), string->len) << "string length should match input length";
-	ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	free(longString);
 }
@@ -205,7 +205,7 @@ TEST_F(GStringTest, appendPrintf)
 	g_string_append_printf(string, "%s", longString);
 	ASSERT_STREQ(solutionString->str, string->str) << "appended string should match solution";
 	ASSERT_EQ(strlen(testData) + oldAllocatedLen, string->len) << "new length match expected length";
-	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	free(longString);
 	g_string_free(solutionString, true);
@@ -231,7 +231,7 @@ TEST_F(GStringTest, append)
 	ASSERT_EQ(string, newString) << "append should always return input string pointer";
 	ASSERT_STREQ(solutionString->str, string->str) << "appended string should match solution";
 	ASSERT_EQ(strlen(testData) + oldAllocatedLen, string->len) << "new length match expected length";
-	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
 
 	free(longString);
 	g_string_free(solutionString, true);
