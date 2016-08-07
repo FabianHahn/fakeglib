@@ -4,7 +4,7 @@
 #include <cstddef> // NULL
 #include <cstdio> // vsnprintf
 #include <cstdlib> // malloc, free
-#include <cstring> // strdup, strlen, memcpy
+#include <cstring> // strdup, strlen, memcpy, memmove
 
 #include "GString.h"
 
@@ -42,6 +42,24 @@ FAKEGLIB_API GString *g_string_sized_new(gsize len)
 	string->str[0] = '\0';
 	string->len = 0;
 	string->allocated_len = len;
+	return string;
+}
+
+FAKEGLIB_API GString *g_string_assign(GString *string, const gchar *rval)
+{
+	size_t length = strlen(rval);
+	assert(length <= LONG_MAX);
+
+	if((gsize) length <= string->allocated_len) {
+		memmove(string->str, rval, length);
+	} else {
+		free(string->str);
+		string->str = (gchar *) malloc((length + 1) * sizeof(gchar));
+		memcpy(string->str, rval, length);
+		string->allocated_len = (gsize) length;
+	}
+	string->len = (gsize) length;
+	string->str[string->len] = '\0';
 	return string;
 }
 

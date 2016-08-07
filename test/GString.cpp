@@ -86,6 +86,37 @@ TEST_F(GStringTest, sizedNew)
 	ASSERT_GE(string->allocated_len, testSize) << "allocated length must be at least specified size";
 }
 
+TEST_F(GStringTest, assign)
+{
+	const char *testData = "asdf";
+
+	g_string_free(string, true);
+	string = g_string_new(testData);
+
+	gsize oldAllocatedLen = string->allocated_len;
+	GString *sameString = g_string_assign(string, testData);
+	ASSERT_EQ(string, sameString) << "assign should return original string pointer";
+	ASSERT_STREQ(testData, string->str) << "assigned string should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "assigned string should have correct length";
+	ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
+
+	char *longString = generateLongString(2 * oldAllocatedLen);
+	sameString = g_string_assign(string, longString);
+	ASSERT_EQ(string, sameString) << "assign should return original string pointer";
+	ASSERT_STREQ(longString, string->str) << "assigned string should match input";
+	ASSERT_EQ(2 * oldAllocatedLen, string->len) << "assigned string should have correct length";
+	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+
+	oldAllocatedLen = string->allocated_len;
+	sameString = g_string_assign(string, testData);
+	ASSERT_EQ(string, sameString) << "assign should return original string pointer";
+	ASSERT_STREQ(testData, string->str) << "assigned string should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "assigned string should have correct length";
+	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+
+	free(longString);
+}
+
 TEST_F(GStringTest, vprintf)
 {
 	const char *testData = "asdf";
