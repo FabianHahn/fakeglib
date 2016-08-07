@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <stdbool.h> // bool
 #include <stddef.h> // size_t
 #include <stdint.h> // int64
 
