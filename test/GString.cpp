@@ -163,3 +163,50 @@ TEST_F(GStringTest, appendVprintf)
 	free(longString);
 	g_string_free(solutionString, true);
 }
+
+TEST_F(GStringTest, printf)
+{
+	const char *testData = "asdf";
+
+	g_string_free(string, true);
+	string = g_string_new(testData);
+
+	gsize oldAllocatedLen = string->allocated_len;
+	char *longString = generateLongString(2 * oldAllocatedLen);
+	g_string_printf(string, "%s", longString);
+	ASSERT_STREQ(longString, string->str) << "printed string should match input";
+	ASSERT_EQ(2 * oldAllocatedLen, string->len) << "new length should be double the old allocated size";
+	ASSERT_LE(2 * oldAllocatedLen, string->allocated_len) << "allocated length should have at least doubled";
+
+	oldAllocatedLen = string->allocated_len;
+	g_string_printf(string, "%s", testData);
+	ASSERT_STREQ(testData, string->str) << "printed string should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "string length should match input length";
+	ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
+
+	free(longString);
+}
+
+TEST_F(GStringTest, appendPrintf)
+{
+	const char *testData = "asdf";
+
+	g_string_free(string, true);
+	string = g_string_sized_new((gsize) strlen(testData));
+	gsize oldAllocatedLen = string->allocated_len;
+	g_string_append_printf(string, "%s", testData);
+	ASSERT_STREQ(testData, string->str) << "printed string should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "string length should match input length";
+	ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
+
+	char *longString = generateLongString(oldAllocatedLen);
+	GString *solutionString = g_string_new("");
+	g_string_printf(solutionString, "%s%s", testData, longString);
+	g_string_append_printf(string, "%s", longString);
+	ASSERT_STREQ(solutionString->str, string->str) << "appended string should match solution";
+	ASSERT_EQ(strlen(testData) + oldAllocatedLen, string->len) << "new length match expected length";
+	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+
+	free(longString);
+	g_string_free(solutionString, true);
+}

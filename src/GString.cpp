@@ -112,6 +112,22 @@ FAKEGLIB_API void g_string_append_vprintf(GString *string, const gchar *format, 
 	g_string_free(newString, false);
 }
 
+FAKEGLIB_API void g_string_printf(GString *string, const gchar *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	g_string_vprintf(string, format, args);
+	va_end(args);
+}
+
+FAKEGLIB_API void g_string_append_printf(GString *string, const gchar *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	g_string_append_vprintf(string, format, args);
+	va_end(args);
+}
+
 FAKEGLIB_API gchar *g_string_free(GString *string, gboolean freeSegment)
 {
 	gchar *str;
