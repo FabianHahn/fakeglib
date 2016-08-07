@@ -18,6 +18,24 @@ public:
 	GString *string;
 };
 
+static char *generateLongString(gsize size)
+{
+	char *longString = (char *) malloc((size + 1) * sizeof(char));
+	for(gsize i = 0; i < size; i++) {
+		longString[i] = (char) 48 + (i % 75);
+	}
+	longString[size] = '\0';
+	return longString;
+}
+
+static void call_g_string_vprintf(GString *string, const gchar *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	g_string_vprintf(string, format, args);
+	va_end(args);
+}
+
 TEST_F(GStringTest, newFree)
 {
 	const char *testData = "asdf";
@@ -47,4 +65,27 @@ TEST_F(GStringTest, newLen)
 	ASSERT_STREQ("asdf", string->str) << "initialized string should be equal to what it was initialized with";
 	ASSERT_EQ(4, string->len) << "initialized string should have correct length";
 	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+}
+
+TEST_F(GStringTest, vprintf)
+{
+	const char *testData = "asdf";
+
+	g_string_free(string, true);
+	string = g_string_new(testData);
+
+	gsize oldAllocatedLen = string->allocated_len;
+	char *longString = generateLongString(2 * oldAllocatedLen);
+	call_g_string_vprintf(string, "%s", longString);
+	ASSERT_STREQ(longString, string->str) << "printed string should match input";
+	ASSERT_EQ(2 * oldAllocatedLen, string->len) << "new length should be double the old allocated size";
+	ASSERT_LE(2 * oldAllocatedLen, string->allocated_len) << "allocated length should have at least doubled";
+
+	oldAllocatedLen = string->allocated_len;
+	call_g_string_vprintf(string, "%s", testData);
+	ASSERT_STREQ(testData, string->str) << "printed string should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "string length should match input length";
+	ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
+
+	free(longString);
 }
