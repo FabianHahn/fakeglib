@@ -210,3 +210,29 @@ TEST_F(GStringTest, appendPrintf)
 	free(longString);
 	g_string_free(solutionString, true);
 }
+
+TEST_F(GStringTest, append)
+{
+	const char *testData = "asdf";
+
+	g_string_free(string, true);
+	string = g_string_sized_new((gsize) strlen(testData));
+	gsize oldAllocatedLen = string->allocated_len;
+	GString *newString = g_string_append(string, testData);
+	ASSERT_EQ(string, newString) << "append should always return input string pointer";
+	ASSERT_STREQ(testData, string->str) << "printed string should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "string length should match input length";
+	ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
+
+	char *longString = generateLongString(oldAllocatedLen);
+	GString *solutionString = g_string_new("");
+	g_string_printf(solutionString, "%s%s", testData, longString);
+	newString = g_string_append(string, longString);
+	ASSERT_EQ(string, newString) << "append should always return input string pointer";
+	ASSERT_STREQ(solutionString->str, string->str) << "appended string should match solution";
+	ASSERT_EQ(strlen(testData) + oldAllocatedLen, string->len) << "new length match expected length";
+	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+
+	free(longString);
+	g_string_free(solutionString, true);
+}

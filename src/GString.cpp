@@ -128,6 +128,29 @@ FAKEGLIB_API void g_string_append_printf(GString *string, const gchar *format, .
 	va_end(args);
 }
 
+FAKEGLIB_API GString *g_string_append(GString *string, const gchar *val)
+{
+	size_t length = strlen(val);
+	assert(length <= LONG_MAX);
+	gsize remainingAllocatedLen = string->allocated_len - string->len;
+
+	if((gsize) length <= remainingAllocatedLen) {
+		gchar *offsetStr = string->str + string->len;
+		memmove(offsetStr, val, length);
+	} else {
+		gchar *newStr = (gchar *) malloc((string->len + length + 1) * sizeof(gchar));
+		memcpy(newStr, string->str, string->len);
+		memcpy(newStr + string->len, val, length);
+
+		free(string->str);
+		string->str = newStr;
+		string->allocated_len = string->len;
+	}
+	string->len = string->len + (gsize) length;
+	string->str[string->len] = '\0';
+	return string;
+}
+
 FAKEGLIB_API gchar *g_string_free(GString *string, gboolean freeSegment)
 {
 	gchar *str;
