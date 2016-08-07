@@ -7,7 +7,7 @@ A partial implementation of [glib](https://github.com/GNOME/glib)'s [C API](http
 C is a great programming language, but generally lacks a standard library of common dynamic data structures such as strings, lists, or maps with a native C API.
 The [GNOME project](https://www.gnome.org/)'s [glib](https://github.com/GNOME/glib) is a notable exception to this rule, and is pretty fantastic for developing C on Linux.
 However, it comes with its own dependencies and uses automake as build tool, making it annoying (though [not impossible](https://github.com/hexchat/gtk-win32)) to build and link on non-UNIX platforms such as Windows.
-This projects aims to alleviate this issue by providing a self-contained partial implementation of [glib](https://github.com/GNOME/glib)'s [C API](https://developer.gnome.org/glib/2.48/) that is backed by the C++ STL data structures - thus the name *fakeglib*.
+This projects aims to alleviate this issue by providing a self-contained partial implementation of [glib](https://github.com/GNOME/glib)'s [C API](https://developer.gnome.org/glib/2.48/) implemented in C++ - thus the name *fakeglib*.
 
 The requirements for *fakeglib* are:
 * Self-contained: Must not depend on any thirdparty code.
@@ -20,3 +20,4 @@ The requirements for *fakeglib* are:
 * [Doubly-Linked Lists](https://developer.gnome.org/glib/2.48/glib-Doubly-Linked-Lists.html) ([full](src/GList.h))
 * [Double-Ended Queues](https://developer.gnome.org/glib/2.48/glib-Double-ended-Queues.html) ([full](src/GQueue.h))
 * [Hash Tables](https://developer.gnome.org/glib/2.48/glib-Hash-Tables.html) ([full](src/GHashTable.h))
+* [Strings](https://developer.gnome.org/glib/2.48/glib-Strings.html) ([partial](src/GString.h))
