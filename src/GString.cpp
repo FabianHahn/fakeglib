@@ -66,6 +66,34 @@ FAKEGLIB_API void g_string_vprintf(GString *string, const gchar *format, va_list
 	assert(ret == string->allocated_len);
 }
 
+FAKEGLIB_API void g_string_append_vprintf(GString *string, const gchar *format, va_list args)
+{
+	gsize remainingAllocatedLen = string->allocated_len - string->len;
+	gchar *offsetStr = string->str + string->len;
+	va_list copiedArgs;
+	va_copy(copiedArgs, args);
+	int ret = vsnprintf(offsetStr, remainingAllocatedLen + 1, format, copiedArgs);
+	va_end(copiedArgs);
+	if(ret < (int) remainingAllocatedLen + 1) {
+		assert(ret >= 0);
+		string->len += ret;
+		return;
+	}
+
+	// not enough space, back off and reallocate
+	GString *newString = g_string_sized_new(string->len + ret);
+	memcpy(newString->str, string->str, string->len);
+	offsetStr = newString->str + string->len;
+	int newRet = vsnprintf(offsetStr, ret + 1, format, args);
+	assert(newRet == ret);
+
+	free(string->str);
+	string->str = newString->str;
+	string->len += ret;
+	string->allocated_len = string->len;
+	g_string_free(newString, false);
+}
+
 FAKEGLIB_API gchar *g_string_free(GString *string, gboolean freeSegment)
 {
 	gchar *str;

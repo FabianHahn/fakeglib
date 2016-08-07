@@ -36,6 +36,14 @@ static void call_g_string_vprintf(GString *string, const gchar *format, ...)
 	va_end(args);
 }
 
+static void call_g_string_append_vprintf(GString *string, const gchar *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	g_string_append_vprintf(string, format, args);
+	va_end(args);
+}
+
 TEST_F(GStringTest, newFree)
 {
 	const char *testData = "asdf";
@@ -99,4 +107,28 @@ TEST_F(GStringTest, vprintf)
 	ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
 
 	free(longString);
+}
+
+TEST_F(GStringTest, appendVprintf)
+{
+	const char *testData = "asdf";
+
+	g_string_free(string, true);
+	string = g_string_sized_new((gsize) strlen(testData));
+	gsize oldAllocatedLen = string->allocated_len;
+	call_g_string_append_vprintf(string, "%s", testData);
+	ASSERT_STREQ(testData, string->str) << "printed string should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "string length should match input length";
+	ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
+
+	char *longString = generateLongString(oldAllocatedLen);
+	GString *solutionString = g_string_new("");
+	call_g_string_vprintf(solutionString, "%s%s", testData, longString);
+	call_g_string_append_vprintf(string, "%s", longString);
+	ASSERT_STREQ(solutionString->str, string->str) << "appended string should match solution";
+	ASSERT_EQ(strlen(testData) + oldAllocatedLen, string->len) << "new length match expected length";
+	ASSERT_GE(string->allocated_len, string->len) << "allocated length must be larger than length";
+
+	free(longString);
+	g_string_free(solutionString, true);
 }
