@@ -304,3 +304,25 @@ TEST_F(GStringTest, truncate)
 	ASSERT_EQ(testData[0], string->str[0]) << "truncated string should match solution";
 	ASSERT_EQ(1, string->len) << "truncated length should be as requested";
 }
+
+TEST_F(GStringTest, setSize)
+{
+	const char *testData = "asdf";
+
+	g_string_append(string, testData);
+	GString *newString = g_string_set_size(string, (gsize) strlen(testData));
+	ASSERT_EQ(string, newString) << "set size should always return input string pointer";
+	ASSERT_STREQ(testData, string->str) << "string with same size should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "string length should match input length";
+
+	newString = g_string_set_size(string, 1);
+	ASSERT_EQ(string, newString) << "set size should always return input string pointer";
+	ASSERT_EQ(testData[0], string->str[0]) << "truncated string should match solution";
+	ASSERT_EQ(1, string->len) << "truncated length should be as requested";
+
+	newString = g_string_set_size(string, 27);
+	ASSERT_EQ(string, newString) << "set size should always return input string pointer";
+	ASSERT_EQ('\0', string->str[27]) << "set size should result in null terminated string";
+	ASSERT_EQ(27, string->len) << "set size should resize string to expected size";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
+}

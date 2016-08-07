@@ -185,6 +185,19 @@ FAKEGLIB_API GString *g_string_truncate(GString *string, gsize len)
 	return string;
 }
 
+FAKEGLIB_API GString *g_string_set_size(GString *string, gsize len)
+{
+	assert(len >= 0);
+
+	if(len >= string->len) {
+		expandStringTo(string, len);
+	}
+
+	string->len = len;
+	string->str[string->len] = '\0';
+	return string;
+}
+
 FAKEGLIB_API gchar *g_string_free(GString *string, gboolean freeSegment)
 {
 	gchar *str;
