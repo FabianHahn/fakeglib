@@ -28,6 +28,7 @@ FAKEGLIB_API void g_string_append_printf(GString *string, const gchar *format, .
 FAKEGLIB_API GString *g_string_append(GString *string, const gchar *val);
 FAKEGLIB_API GString *g_string_append_c(GString *string, gchar c);
 FAKEGLIB_API GString *g_string_append_len(GString *string, const gchar *val, gssize len);
+FAKEGLIB_API GString *g_string_truncate(GString *string, gsize len);
 FAKEGLIB_API gchar *g_string_free(GString *string, gboolean free_segment);
 
 #ifdef __cplusplus

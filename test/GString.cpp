@@ -288,3 +288,19 @@ TEST_F(GStringTest, appendLen)
 	free(longString);
 	g_string_free(solutionString, true);
 }
+
+TEST_F(GStringTest, truncate)
+{
+	const char *testData = "asdf";
+
+	g_string_append(string, testData);
+	GString *newString = g_string_truncate(string, 1337);
+	ASSERT_EQ(string, newString) << "truncate should always return input string pointer";
+	ASSERT_STREQ(testData, string->str) << "untruncated string should match input";
+	ASSERT_EQ(strlen(testData), string->len) << "string length should match input length";
+
+	newString = g_string_truncate(string, 1);
+	ASSERT_EQ(string, newString) << "truncate should always return input string pointer";
+	ASSERT_EQ(testData[0], string->str[0]) << "truncated string should match solution";
+	ASSERT_EQ(1, string->len) << "truncated length should be as requested";
+}
