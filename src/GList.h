@@ -14,8 +14,8 @@ typedef void (*GFunc)(gpointer data, gpointer user_data);
 
 struct GListStruct {
 	gpointer data;
-	GListStruct *next;
-	GListStruct *prev;
+	struct GListStruct *next;
+	struct GListStruct *prev;
 };
 typedef struct GListStruct GList;
 
