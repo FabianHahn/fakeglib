@@ -144,6 +144,19 @@ FAKEGLIB_API GString *g_string_append(GString *string, const gchar *val)
 	return string;
 }
 
+FAKEGLIB_API GString *g_string_append_c(GString *string, gchar c)
+{
+	gsize remainingAllocatedLen = string->allocated_len - string->len;
+
+	if(remainingAllocatedLen == 1) {
+		expandStringTo(string, string->len + 1);
+	}
+	string->str[string->len] = c;
+	string->len++;
+	string->str[string->len] = '\0';
+	return string;
+}
+
 FAKEGLIB_API gchar *g_string_free(GString *string, gboolean freeSegment)
 {
 	gchar *str;

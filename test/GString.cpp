@@ -236,3 +236,29 @@ TEST_F(GStringTest, append)
 	free(longString);
 	g_string_free(solutionString, true);
 }
+
+TEST_F(GStringTest, appendC)
+{
+	g_string_free(string, true);
+	string = g_string_sized_new(1);
+	gsize oldAllocatedLen = string->allocated_len;
+	GString *solutionString = g_string_new("");
+
+	while(string->len < oldAllocatedLen - 1) {
+		g_string_append(solutionString, "x");
+		GString *newString = g_string_append_c(string, 'x');
+		ASSERT_EQ(string, newString) << "append should always return input string pointer";
+		ASSERT_STREQ(solutionString->str, string->str) << "appended string should match solution";
+		ASSERT_EQ(solutionString->len, string->len) << "appended string length should match solution length";
+		ASSERT_EQ(oldAllocatedLen, string->allocated_len) << "allocated length should be unchanged";
+	}
+
+	g_string_append(solutionString, "y");
+	GString *newString = g_string_append_c(string, 'y');
+	ASSERT_EQ(string, newString) << "append should always return input string pointer";
+	ASSERT_STREQ(solutionString->str, string->str) << "appended string should match solution";
+	ASSERT_EQ(solutionString->len, string->len) << "appended string length should match solution length";
+	ASSERT_GT(string->allocated_len, string->len) << "allocated length must be larger than length";
+
+	g_string_free(solutionString, true);
+}
