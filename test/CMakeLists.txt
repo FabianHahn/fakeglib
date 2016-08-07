@@ -1,8 +1,8 @@
 set(TEST_SRC
-	GHashTable.cpp
-	GList.cpp
-	GQueue.cpp
-	GString.cpp
+	GHashTableTest.cpp
+	GListTest.cpp
+	GQueueTest.cpp
+	GStringTest.cpp
 	main.cpp
 )
 
