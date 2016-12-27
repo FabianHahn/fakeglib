@@ -6,6 +6,8 @@ enable_testing()
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
 option(FAKEGLIB_BUILD_TESTS "Build the fakeglib tests" ON)
+option(FAKEGLIB_BUILD_STATIC "Build the fakeglib static library" ON)
+option(FAKEGLIB_BUILD_SHARED "Build the fakeglib shared library" ON)
 
 find_package(glib 2.48)
 if(GLIB_FOUND)
