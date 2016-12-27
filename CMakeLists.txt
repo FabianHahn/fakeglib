@@ -18,8 +18,8 @@ set(gtest_force_shared_crt ON CACHE BOOL "Disable gtest use of static runtime")
 set(gtest_disable_pthreads ON CACHE BOOL "Disable gtest use of pthreads")
 
 add_subdirectory(src)
-add_subdirectory(thirdparty)
 
 if(FAKEGLIB_BUILD_TESTS)
 	add_subdirectory(test)
+	add_subdirectory(thirdparty)
 endif()
