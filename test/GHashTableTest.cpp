@@ -196,7 +196,7 @@ TEST_F(GHashTableTest, size)
 	
 	guint size = g_hash_table_size(hashTable);
 	ASSERT_EQ(size, 0) << "hash table should contain zero elements before an element is inserted";
-	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testSecondKey);
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
 	size = g_hash_table_size(hashTable);
 	ASSERT_EQ(size, 1) << "hash table should contain one element after an element was inserted";
 	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
