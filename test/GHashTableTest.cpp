@@ -139,7 +139,7 @@ TEST_F(GHashTableTest, insertTwice)
 {
 	Create();
 	const char *testFirstKey = "foo";
-	const char *testSecondKey = "foo";
+	char *testSecondKey = strdup("foo");
 	int testFirstValue = 1337;
 	int testSecondValue = 42;
 
@@ -152,13 +152,15 @@ TEST_F(GHashTableTest, insertTwice)
 	ASSERT_EQ(keyDestroyed[0], (gpointer) testSecondKey) << "inserted second element should have had its key destroyed";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "inserted first element should have had its value destroyed";
+
+	free(testSecondKey);
 }
 
 TEST_F(GHashTableTest, insertReplace)
 {
 	Create();
 	const char *testFirstKey = "foo";
-	const char *testSecondKey = "foo";
+	char *testSecondKey = strdup("foo");
 	int testFirstValue = 1337;
 	int testSecondValue = 42;
 
@@ -171,6 +173,8 @@ TEST_F(GHashTableTest, insertReplace)
 	ASSERT_EQ(keyDestroyed[0], (gpointer) testFirstKey) << "inserted second element should have replaced key of first element";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "inserted first element should have had its value destroyed";
+
+	free(testSecondKey);
 }
 
 TEST_F(GHashTableTest, contains)
@@ -211,7 +215,7 @@ TEST_F(GHashTableTest, lookup)
 {
 	Create();
 	const char *testFirstKey = "foo";
-	const char *testSecondKey = "foo";
+	char *testSecondKey = strdup("foo");
 	int testValue = 1337;
 
 	gpointer value = g_hash_table_lookup(hashTable, testFirstKey);
@@ -221,13 +225,15 @@ TEST_F(GHashTableTest, lookup)
 	ASSERT_TRUE(value == &testValue) << "hash table should look up entry after it was inserted";
 	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
 	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+
+	free(testSecondKey);
 }
 
 TEST_F(GHashTableTest, lookupExtended)
 {
 	Create();
 	const char *testFirstKey = "foo";
-	const char *testSecondKey = "foo";
+	char *testSecondKey = strdup("foo");
 	int testValue = 1337;
 
 	gboolean found;
@@ -242,6 +248,8 @@ TEST_F(GHashTableTest, lookupExtended)
 	ASSERT_EQ(&testValue, value) << "extended hash table lookup should return value";
 	ASSERT_GE(equaled.size(), 1) << "inserted elements should have been equaled at least once";
 	ASSERT_EQ(equaled[0], make_ordered_pair((gconstpointer) testFirstKey, (gconstpointer) testSecondKey)) << "inserted elements should have been equaled";
+
+	free(testSecondKey);
 }
 
 TEST_F(GHashTableTest, foreach)
