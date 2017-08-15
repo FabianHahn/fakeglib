@@ -153,6 +153,11 @@ TEST_F(GHashTableTest, insertTwice)
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "inserted first element should have had its value destroyed";
 
+	test_foreach_clear();
+	g_hash_table_foreach(hashTable, test_foreach_callback, NULL);
+	ASSERT_EQ(foreachCallbacks.size(), 1) << "foreach callback should have been called once";
+	ASSERT_NE(std::find(foreachCallbacks.begin(), foreachCallbacks.end(), std::make_pair((gpointer) testFirstKey, (gpointer) &testSecondValue)), foreachCallbacks.end()) << "reinsert should have replaced value, but not key";
+
 	free(testSecondKey);
 }
 
@@ -173,6 +178,11 @@ TEST_F(GHashTableTest, insertReplace)
 	ASSERT_EQ(keyDestroyed[0], (gpointer) testFirstKey) << "inserted second element should have replaced key of first element";
 	ASSERT_EQ(valueDestroyed.size(), 1) << "inserted first element should have had its value destroyed";
 	ASSERT_EQ(valueDestroyed[0], (gpointer) &testFirstValue) << "inserted first element should have had its value destroyed";
+
+	test_foreach_clear();
+	g_hash_table_foreach(hashTable, test_foreach_callback, NULL);
+	ASSERT_EQ(foreachCallbacks.size(), 1) << "foreach callback should have been called once";
+	ASSERT_NE(std::find(foreachCallbacks.begin(), foreachCallbacks.end(), std::make_pair((gpointer) testSecondKey, (gpointer) &testSecondValue)), foreachCallbacks.end()) << "replace should have replaced both key and value";
 
 	free(testSecondKey);
 }
