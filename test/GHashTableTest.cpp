@@ -519,8 +519,8 @@ TEST_F(GHashTableTest, iter)
 	int testFirstValue = 1337;
 	int testSecondValue = 42;
 
-	g_hash_table_insert(hashTable, (gpointer)testFirstKey, &testFirstValue);
-	g_hash_table_insert(hashTable, (gpointer)testSecondKey, &testSecondValue);
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
 
 	GHashTableIter iter;
 	gpointer key;
@@ -534,6 +534,75 @@ TEST_F(GHashTableTest, iter)
 	ASSERT_EQ(iteratedElements.size(), 2) << "iterator should have iterated over two elements";
 	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), std::make_pair((gpointer) testFirstKey, (gpointer) &testFirstValue)), iteratedElements.end()) << "first element should have been iterated over";
 	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), std::make_pair((gpointer) testSecondKey, (gpointer) &testSecondValue)), iteratedElements.end()) << "second element should have been iterated over";
+}
+
+TEST_F(GHashTableTest, iterKeyOnly)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+
+	GHashTableIter iter;
+	gpointer key;
+	std::vector<gpointer> iteratedElements;
+	g_hash_table_iter_init(&iter, hashTable);
+	while(g_hash_table_iter_next(&iter, &key, NULL)) {
+		iteratedElements.push_back(key);
+	}
+
+	ASSERT_EQ(iteratedElements.size(), 2) << "iterator should have iterated over two elements";
+	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), (gpointer) testFirstKey), iteratedElements.end()) << "first element should have been iterated over";
+	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), (gpointer) testSecondKey), iteratedElements.end()) << "second element should have been iterated over";
+}
+
+TEST_F(GHashTableTest, iterValueOnly)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+
+	GHashTableIter iter;
+	gpointer value;
+	std::vector<gpointer> iteratedElements;
+	g_hash_table_iter_init(&iter, hashTable);
+	while(g_hash_table_iter_next(&iter, NULL, &value)) {
+		iteratedElements.push_back(value);
+	}
+
+	ASSERT_EQ(iteratedElements.size(), 2) << "iterator should have iterated over two elements";
+	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), (gpointer) &testFirstValue), iteratedElements.end()) << "first element should have been iterated over";
+	ASSERT_NE(std::find(iteratedElements.begin(), iteratedElements.end(), (gpointer) &testSecondValue), iteratedElements.end()) << "second element should have been iterated over";
+}
+
+TEST_F(GHashTableTest, iterNull)
+{
+	Create();
+	const char *testFirstKey = "foo";
+	const char *testSecondKey = "bar";
+	int testFirstValue = 1337;
+	int testSecondValue = 42;
+
+	g_hash_table_insert(hashTable, (gpointer) testFirstKey, &testFirstValue);
+	g_hash_table_insert(hashTable, (gpointer) testSecondKey, &testSecondValue);
+
+	GHashTableIter iter;
+	int iteratedElements = 0;
+	g_hash_table_iter_init(&iter, hashTable);
+	while(g_hash_table_iter_next(&iter, NULL, NULL)) {
+		iteratedElements++;
+	}
+
+	ASSERT_EQ(iteratedElements, 2) << "iterator should have iterated over two elements";
 }
 
 TEST_F(GHashTableTest, iterGetHashTable)
