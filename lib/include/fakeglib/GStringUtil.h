@@ -10,6 +10,8 @@ extern "C" {
 
 FAKEGLIB_API gboolean g_str_has_prefix(const gchar *str, const gchar *prefix);
 FAKEGLIB_API gboolean g_str_has_suffix(const gchar *str, const gchar *suffix);
+FAKEGLIB_API gchar **g_strsplit(const gchar *string, const gchar *delimiter, gint max_tokens);
+FAKEGLIB_API void g_strfreev(gchar **str_array);
 
 #ifdef __cplusplus
 }
