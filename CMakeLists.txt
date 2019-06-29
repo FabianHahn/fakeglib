@@ -50,6 +50,11 @@ if(FAKEGLIB_INSTALL)
 		COPYONLY
 	)
 
+	export(EXPORT fakeglib-targets
+		FILE ${CMAKE_CURRENT_BINARY_DIR}/fakeglibTargets.cmake
+		NAMESPACE fakeglib::
+	)
+
 	export(PACKAGE fakeglib)
 endif()
 
