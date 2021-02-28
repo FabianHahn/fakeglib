@@ -1,4 +1,5 @@
 set(TEST_SRC
+	GArrayTest.cpp
 	GDateTimeTest.cpp
 	GHashTableTest.cpp
 	GListTest.cpp
