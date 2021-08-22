@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/FabianHahn/fakeglib.svg)](https://travis-ci.org/FabianHahn/fakeglib)
+[![Build Status](https://app.travis-ci.com/FabianHahn/fakeglib.svg?branch=master)](https://app.travis-ci.com/github/FabianHahn/fakeglib)
 
 # fakeglib
 A partial implementation of [glib](https://github.com/GNOME/glib)'s [C API](https://docs.gtk.org/glib/) in C++.

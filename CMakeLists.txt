@@ -11,7 +11,7 @@ option(FAKEGLIB_BUILD_SHARED "Build the fakeglib shared library" ON)
 option(FAKEGLIB_VENDOR_GOOGLETEST "Vendor the googletest thirdparty library" ON)
 option(FAKEGLIB_INSTALL "Enable fakeglib installation" ON)
 
-find_package(glib 2.48)
+find_package(glib 2.61.2)
 
 set(gtest_force_shared_crt ON CACHE BOOL "Disable gtest use of static runtime")
 set(gtest_disable_pthreads ON CACHE BOOL "Disable gtest use of pthreads")
