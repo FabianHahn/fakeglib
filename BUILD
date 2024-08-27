@@ -2,12 +2,12 @@ package(default_visibility = ["//visibility:public"])
 
 config_setting(
     name = "linux",
-    constraint_values = ["@bazel_tools//platforms:linux"],
+    constraint_values = ["@platforms//os:linux"],
 )
 
 config_setting(
     name = "windows",
-    constraint_values = ["@bazel_tools//platforms:windows"],
+    constraint_values = ["@platforms//os:windows"],
 )
 
 genrule(
@@ -30,7 +30,6 @@ cc_library(
         "lib/src/GTime.cpp",
     ],
     hdrs = [
-        ":lib/include/fakeglib/api.h",
         "lib/include/fakeglib/GArray.h",
         "lib/include/fakeglib/GDateTime.h",
         "lib/include/fakeglib/GHashTable.h",
@@ -42,6 +41,7 @@ cc_library(
         "lib/include/fakeglib/GTime.h",
         "lib/include/fakeglib/GTypes.h",
         "lib/include/glib.h",
+        ":lib/include/fakeglib/api.h",
     ],
     copts = select({
         "@//:windows": [],
@@ -71,5 +71,5 @@ cc_test(
     deps = [
         ":fakeglib",
         "@googletest//:gtest",
-    ]
+    ],
 )
