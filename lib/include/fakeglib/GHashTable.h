@@ -19,13 +19,13 @@ typedef struct GHashTableStruct GHashTable;
 
 #ifndef FAKEGLIB_G_HASH_TABLE_ITER_SIZE
 	#if _WIN32
-		#define FAKEGLIB_G_HASH_TABLE_ITER_SIZE 40
+		#define FAKEGLIB_G_HASH_TABLE_ITER_SIZE 5
 	#else
-		#define FAKEGLIB_G_HASH_TABLE_ITER_SIZE 32
+		#define FAKEGLIB_G_HASH_TABLE_ITER_SIZE 4
 	#endif
 #endif
 struct GHashTableIterStruct {
-	unsigned char dummy[FAKEGLIB_G_HASH_TABLE_ITER_SIZE];
+	void *dummy[4];
 };
 typedef struct GHashTableIterStruct GHashTableIter;
 
